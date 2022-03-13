@@ -100,6 +100,12 @@ public class MatrixProduct {
             }
         }
 
+        for (i = 0; i < mA; i++) {
+            for (j = 0; j < mA; j++) {
+                c[i*mA + j] = 0.0;
+            }
+        }
+
         start = System.nanoTime();
 
         for (i = 0; i < mA; i++) {
