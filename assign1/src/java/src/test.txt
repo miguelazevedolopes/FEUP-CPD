@@ -1,0 +1,46 @@
+TESTING OnMult:
+
+matrix with size: 600
+time: 0.4207117seconds
+
+matrix with size: 1000
+time: 2.9708599seconds
+
+matrix with size: 1400
+time: 7.6219748seconds
+
+matrix with size: 1800
+time: 29.749996seconds
+
+matrix with size: 2200
+time: 63.3435083seconds
+
+matrix with size: 2600
+time: 115.1176896seconds
+
+matrix with size: 3000
+time: 190.6970542seconds
+
+TESTING OnMultLine:
+
+matrix with size: 600
+time: 0.2629687 seconds
+
+matrix with size: 1000
+time: 1.0931214 seconds
+
+matrix with size: 1400
+time: 3.1021775 seconds
+
+matrix with size: 1800
+time: 6.5926063 seconds
+
+matrix with size: 2200
+time: 12.0283454 seconds
+
+matrix with size: 2600
+time: 26.3027076 seconds
+
+matrix with size: 3000
+time: 41.3331163 seconds
+
