@@ -36,25 +36,13 @@ public class MatrixProduct {
 
         FileWriter testFile = new FileWriter("test.txt");
 
-        testFile.write("TESTING OnMult:\n\n");
-        System.out.println("TESTING OnMult:");
-        System.out.println();
         for (int i = 600; i <= 3000; i+=400) {
-            testFile.write("matrix with size: " + i + "\n");
-            System.out.println("matrix with size: " + i);
-            double time = OnMult(i, i);
-            testFile.write("time: " + time + " seconds\n\n");
-            System.out.println();
-        }
-
-        testFile.write("TESTING OnMultLine:\n\n");
-        System.out.println("TESTING OnMultLine:");
-        System.out.println();
-        for (int i = 600; i <= 3000; i+=400) {
-            testFile.write("matrix with size: " + i + "\n");
-            System.out.println("matrix with size: " + i);
-            double time = OnMultLine(i, i);
-            testFile.write("time: " + time + " seconds\n\n");
+            testFile.write("matrix with size: " + i + "x" + i + "\n");
+            System.out.println("matrix with size: " + i + "x" + i);
+            double timeMult = OnMult(i, i);
+            testFile.write("time mult: " + timeMult + " seconds\n");
+            double timeMultLine = OnMultLine(i, i);
+            testFile.write("time mult line: " + timeMultLine + " seconds\n\n");
             System.out.println();
         }
 
@@ -96,7 +84,7 @@ public class MatrixProduct {
         finish = System.nanoTime();
         elapsed = (finish - start) / 1000000000;
 
-        System.out.println("Time: " + elapsed + " seconds");
+        System.out.println("Time Mult: " + elapsed + " seconds");
         System.out.println("Result Matrix:");
         for (i = 0; i < 1; i++) {
             for (j = 0; j < Math.min(10, mB); j++) {
@@ -145,7 +133,7 @@ public class MatrixProduct {
         finish = System.nanoTime();
         elapsed = (finish - start) / 1000000000;
 
-        System.out.println("Time: " + elapsed + " seconds");
+        System.out.println("Time Mult Line: " + elapsed + " seconds");
         System.out.println("Result Matrix:");
         for (i = 0; i < 1; i++) {
             for (j = 0; j < Math.min(10, mB); j++) {
