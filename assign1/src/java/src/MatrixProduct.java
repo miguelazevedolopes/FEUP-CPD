@@ -43,7 +43,7 @@ public class MatrixProduct {
             testFile.write("matrix with size: " + i + "\n");
             System.out.println("matrix with size: " + i);
             double time = OnMult(i, i);
-            testFile.write("time: " + time + "seconds\n\n");
+            testFile.write("time: " + time + " seconds\n\n");
             System.out.println();
         }
 
