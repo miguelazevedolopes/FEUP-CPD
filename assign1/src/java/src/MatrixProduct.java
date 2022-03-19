@@ -4,7 +4,7 @@ import java.io.IOException;
 public class MatrixProduct {
 
     public static void main(String[] args) throws IOException {
-        FileWriter testFile = new FileWriter("test.txt");
+        FileWriter testFile = new FileWriter("test_miguel.txt");
 
         for (int i = 600; i <= 3000; i+=400) {
             testFile.write("matrix with size: " + i + "x" + i + "\n");
