@@ -4,12 +4,13 @@
 #include <time.h>
 #include <cstdlib>
 #include <papi.h>
+#include <fstream>
 
 using namespace std;
 
 #define SYSTEMTIME clock_t
 
-void OnMult(int m_ar, int m_br)
+void OnMult(int m_ar, int m_br, ofstream &out)
 {
 
     SYSTEMTIME Time1, Time2;
@@ -49,16 +50,17 @@ void OnMult(int m_ar, int m_br)
 
     Time2 = clock();
     sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-    cout << st;
+    out << st;
 
     // display 10 elements of the result matrix tto verify correctness
-    cout << "Result matrix: " << endl;
+    out << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
         for (j = 0; j < min(10, m_br); j++)
-            cout << phc[j] << " ";
+            out << phc[j] << " ";
     }
-    cout << endl;
+    out << endl;
+    cout<<"End mult matrix"<<endl;
 
     free(pha);
     free(phb);
@@ -66,7 +68,7 @@ void OnMult(int m_ar, int m_br)
 }
 
 // add code here for line x line matriz multiplication
-void OnMultLine(int m_ar, int m_br)
+void OnMultLine(int m_ar, int m_br, ofstream &out)
 {
     SYSTEMTIME Time1, Time2;
 
@@ -104,16 +106,17 @@ void OnMultLine(int m_ar, int m_br)
 
     Time2 = clock();
     sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-    cout << st;
+    out << st;
 
     // display 10 elements of the result matrix tto verify correctness
-    cout << "Result matrix: " << endl;
+    out << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
         for (j = 0; j < min(10, m_br); j++)
-            cout << phc[j] << " ";
+            out << phc[j] << " ";
     }
-    cout << endl;
+    out << endl;
+    cout<<"End multline matrix"<<endl;
 
     free(pha);
     free(phb);
@@ -122,7 +125,7 @@ void OnMultLine(int m_ar, int m_br)
 }
 
 // add code here for block x block matriz multiplication
-void OnMultBlock(int m_ar, int m_br, int bkSize)
+void OnMultBlock(int m_ar, int m_br, int bkSize, ofstream &out)
 {
     SYSTEMTIME Time1, Time2;
 
@@ -163,22 +166,22 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 
     Time2 = clock();
     sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-    cout << st;
+    out << st;
 
     // display 10 elements of the result matrix tto verify correctness
-    cout << "Result matrix: " << endl;
+    out << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
         for (j = 0; j < min(10, m_br); j++)
-            cout << phc[j] << " ";
+            out << phc[j] << " ";
     }
-    cout << endl;
+    out << endl;
 
     free(pha);
     free(phb);
     free(phc);
 
-
+    cout<<"End block matrix"<<endl;
 }
 
 void handle_error(int retval)
@@ -205,87 +208,199 @@ void init_papi()
 
 int main(int argc, char *argv[])
 {
-
     char c;
-    int lin, col, blockSize;
+    // int lin, col, blockSize;
     int op;
-
+    ofstream outputFile;
+    outputFile.open("output.txt");
     int EventSet = PAPI_NULL;
-    long long values[2];
+    long long values[4];
     int ret;
 
     ret = PAPI_library_init(PAPI_VER_CURRENT);
     if (ret != PAPI_VER_CURRENT)
-        std::cout << "FAIL" << endl;
+        outputFile << "FAIL" << endl;
 
     ret = PAPI_create_eventset(&EventSet);
     if (ret != PAPI_OK)
-        cout << "ERROR: create eventset" << endl;
+        outputFile << "ERROR: create eventset" << endl;
 
     ret = PAPI_add_event(EventSet, PAPI_L1_DCM);
     if (ret != PAPI_OK)
-        cout << "ERROR: PAPI_L1_DCM" << endl;
+        outputFile << "ERROR: PAPI_L1_DCM" << endl;
 
     ret = PAPI_add_event(EventSet, PAPI_L2_DCM);
     if (ret != PAPI_OK)
-        cout << "ERROR: PAPI_L2_DCM" << endl;
+        outputFile << "ERROR: PAPI_L2_DCM" << endl;
 
-    op = 1;
-    do
-    {
-        cout << endl
-             << "1. Multiplication" << endl;
-        cout << "2. Line Multiplication" << endl;
-        cout << "3. Block Multiplication" << endl;
-        cout << "Selection?: ";
-        cin >> op;
-        if (op == 0)
-            break;
-        printf("Dimensions: lins=cols ? ");
-        cin >> lin;
-        col = lin;
+    ret = PAPI_add_event(EventSet, PAPI_LD_INS);
+    if (ret != PAPI_OK)
+        outputFile << "ERROR: PAPI_LD_INS" << endl;
 
-        // Start counting
+    ret = PAPI_add_event(EventSet, PAPI_SR_INS);
+    if (ret != PAPI_OK)
+        outputFile << "ERROR: PAPI_SR_INS" << endl;
+
+
+    for(int i=600;i<=3000;i+=400){
         ret = PAPI_start(EventSet);
         if (ret != PAPI_OK)
-            cout << "ERROR: Start PAPI" << endl;
-
-        switch (op)
-        {
-        case 1:
-            OnMult(lin, col);
-            break;
-        case 2:
-            OnMultLine(lin, col);
-            break;
-        case 3:
-            cout << "Block Size? ";
-            cin >> blockSize;
-            OnMultBlock(lin, col, blockSize);
-            break;
-        }
-
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMult(i, i,outputFile);
         ret = PAPI_stop(EventSet, values);
         if (ret != PAPI_OK)
-            cout << "ERROR: Stop PAPI" << endl;
-        printf("L1 DCM: %lld \n", values[0]);
-        printf("L2 DCM: %lld \n", values[1]);
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-        ret = PAPI_reset(EventSet);
+        outputFile << values[0]<<endl;
+        outputFile <<values[1]<<endl;
+        outputFile <<values[2]<<endl;
+        outputFile <<values[3]<<endl;
+        outputFile <<"--------"<<endl;
+    }
+
+    
+
+    for(int i=600;i<=3000;i+=400){
+        ret = PAPI_start(EventSet);
         if (ret != PAPI_OK)
-            std::cout << "FAIL reset" << endl;
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMultLine(i, i,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    } while (op != 0);
+        outputFile <<values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile <<values[2]<<endl;
+        outputFile <<values[3]<<endl;
+        outputFile <<"--------"<<endl;
+    }
+
+    
+
+    
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMultLine(i, i,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
+
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile << values[3]<<endl;
+        outputFile <<"--------"<<endl;
+
+    }
+
+    
+    
+
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 128<<endl;
+        OnMultBlock(i, i, 128,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
+
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile << values[3]<<endl;
+        outputFile <<"--------"<<endl;
+    }
+
+    
+    
+    
+
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 256<<endl;
+        OnMultBlock(i, i, 256,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
+
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile << values[3]<<endl;
+        outputFile <<"--------"<<endl;
+    }
+
+    
+
+
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 512<<endl;
+        OnMultBlock(i, i, 512,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
+
+        outputFile <<  values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile << values[3]<<endl;
+        outputFile <<"--------"<<endl;
+
+    }
+
+    
+    
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 1024<<endl;
+        OnMultBlock(i, i, 1024,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
+
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile << values[3]<<endl;
+        outputFile <<"--------"<<endl;
+    
+    }
+
+    
+    ret = PAPI_reset(EventSet);
+    if (ret != PAPI_OK)
+        outputFile << "FAIL reset" << endl;
 
     ret = PAPI_remove_event(EventSet, PAPI_L1_DCM);
     if (ret != PAPI_OK)
-        std::cout << "FAIL remove event" << endl;
+        outputFile << "FAIL remove event" << endl;
 
     ret = PAPI_remove_event(EventSet, PAPI_L2_DCM);
     if (ret != PAPI_OK)
-        std::cout << "FAIL remove event" << endl;
+        outputFile << "FAIL remove event" << endl;
 
     ret = PAPI_destroy_eventset(&EventSet);
     if (ret != PAPI_OK)
-        std::cout << "FAIL destroy" << endl;
+        outputFile << "FAIL destroy" << endl;
 }
