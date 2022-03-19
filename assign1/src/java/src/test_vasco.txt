@@ -1,28 +1,28 @@
 matrix with size: 600x600
-time mult: 0.3720191 seconds
-time mult line: 0.2457046 seconds
+time mult: 0.347347001 seconds
+time mult line: 0.1618989 seconds
 
 matrix with size: 1000x1000
-time mult: 2.6031631 seconds
-time mult line: 1.008206 seconds
+time mult: 1.149001 seconds
+time mult line: 0.5045169 seconds
 
 matrix with size: 1400x1400
-time mult: 7.1038589 seconds
-time mult line: 3.0625686 seconds
+time mult: 3.482126801 seconds
+time mult line: 1.5391673 seconds
 
 matrix with size: 1800x1800
-time mult: 27.7435544 seconds
-time mult line: 6.5762084 seconds
+time mult: 10.0871784 seconds
+time mult line: 3.3395219 seconds
 
 matrix with size: 2200x2200
-time mult: 64.4695299 seconds
-time mult line: 12.8002358 seconds
+time mult: 30.3671149 seconds
+time mult line: 7.358251799 seconds
 
 matrix with size: 2600x2600
-time mult: 113.3556047 seconds
-time mult line: 25.8796467 seconds
+time mult: 72.491543399 seconds
+time mult line: 12.1573961 seconds
 
 matrix with size: 3000x3000
-time mult: 189.6109128 seconds
-time mult line: 38.8550065 seconds
+time mult: 132.9635491 seconds
+time mult line: 18.6726246 seconds
 
