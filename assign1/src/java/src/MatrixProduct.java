@@ -1,39 +1,9 @@
-//import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class MatrixProduct {
 
     public static void main(String[] args) throws IOException {
-        /*
-        int lin, col, option;
-
-        System.out.println("1. Multiplication");
-        System.out.println("2. Line Multiplication");
-        System.out.println("Selection?:");
-
-        try (Scanner in = new Scanner(System.in)) {
-            option = in.nextInt();
-            if (option != 1 && option != 2) {
-                System.out.println("Exiting...");
-                return;
-            }
-
-            System.out.println("Dimensions: lin=col ?");
-            lin = in.nextInt();
-            col = lin;
-
-            switch (option) {
-                case 1:
-                    OnMult(lin, col);
-                    break;
-                case 2:
-                    OnMultLine(lin, col);
-                    break;
-            }
-        }
-        */
-
         FileWriter testFile = new FileWriter("test.txt");
 
         for (int i = 600; i <= 3000; i+=400) {

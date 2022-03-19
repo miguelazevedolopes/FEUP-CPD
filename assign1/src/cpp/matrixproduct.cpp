@@ -94,6 +94,7 @@ void OnMultLine(int m_ar, int m_br, ofstream &out)
             phb[i * m_br + j] = (double)(i + 1);
         }
     }
+
     Time1 = clock();
 
     for (i = 0; i < m_ar; i++) {
@@ -131,7 +132,7 @@ void OnMultBlock(int m_ar, int m_br, int bkSize, ofstream &out)
 
     char st[100];
     double temp;
-    int i, j, k;
+    int i, j, k, jj, kk;
 
     double *pha, *phb, *phc;
 
@@ -151,12 +152,14 @@ void OnMultBlock(int m_ar, int m_br, int bkSize, ofstream &out)
             phb[i * m_br + j] = (double)(i + 1);
         }
     }
+
     Time1 = clock();
-    for(int kk=0;kk<m_ar;kk+=bkSize){
-        for(int jj=0;jj<m_ar;jj+=bkSize){
-            for (int i=0;i<m_ar;i++){
-                for(int j=jj;j<jj+bkSize;j++){
-                    for( k=kk;k<kk+bkSize;k++){
+
+    for (kk = 0; kk < m_ar; kk += bkSize){
+        for (jj = 0; jj < m_ar; jj += bkSize){
+            for (i = 0 ; i < m_ar; i++){
+                for (j = jj ; j < jj + bkSize; j++){
+                    for (k = kk; k < kk + bkSize; k++){
                        phc[i*m_ar + j] += pha[i*m_ar + k] * phb[k*m_br + j];
                     }
                 }
