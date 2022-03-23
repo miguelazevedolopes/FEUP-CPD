@@ -160,7 +160,7 @@ void OnMultBlock(int m_ar, int m_br, int bkSize, ofstream &out)
             for (i = 0 ; i < m_ar; i++){
                 for (k = kk; k < kk + bkSize; k++){
                     for (j = jj ; j < jj + bkSize; j++){
-                       phc[i*m_ar + j] += pha[i*m_ar + k] * phb[k*m_br + j];
+                       phc[i*m_ar + j] += pha[i*m_ar + k] * phb[k*m_br + j] ;
                     }
                 }
             }
