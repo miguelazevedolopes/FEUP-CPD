@@ -9,8 +9,6 @@
 
 ## Assignment 1
 
-Report - [Link](assign1/doc/CPD%20-%20Assignment%201.pdf)
-
-C++ Code and Results - [Link](assign1/src/cpp)
-
-Java Code and Results - [Link](assign1/src/java/src)
+* Report - [Link](assign1/doc/CPD%20-%20Assignment%201.pdf)
+* C++ Code and Results - [Link](assign1/src/cpp)
+* Java Code and Results - [Link](assign1/src/java/src)
