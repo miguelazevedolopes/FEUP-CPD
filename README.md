@@ -7,8 +7,10 @@
 | Miguel Lopes                       | up201704590    | up201704590@up.pt |
 | Vasco Alves                        | up201808031    | up201808031@up.pt |
 
-### Assignment 1
+## Assignment 1
 
-[Report](assign1/doc/CPD%20-%20Assignment%201.pdf)
-[C++ Code and Results](assign1/src/cpp)
-[Java Code and Results](assign1/src/java/src)
+Report - [Link](assign1/doc/CPD%20-%20Assignment%201.pdf)
+
+C++ Code and Results - [Link](assign1/src/cpp)
+
+Java Code and Results - [Link](assign1/src/java/src)
