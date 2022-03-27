@@ -1,9 +1,14 @@
-# CPD Projects
+# CPD Projects - Group T10G01
 
-CPD Projects of group T10G01.
+| Group Members                      |                |                   |
+| ---------------------------------- | -------------- | ----------------- |
+| Name                               | Student Number | Email             |
+| Afonso Duarte de Carvalho Monteiro | up201907284    | up201907284@up.pt |
+| Miguel Lopes                       | up201704590    | up201704590@up.pt |
+| Vasco Alves                        | up201808031    | up201808031@up.pt |
 
-Group members:
+### Assignment 1
 
-1. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
-2. Miguel Lopes up201704590@up.pt
-3. Vasco Alves up201808031@up.pt
+[Report](assign1/doc/CPD%20-%20Assignment%201.pdf)
+[C++ Code and Results](assign1/src/cpp)
+[Java Code and Results](assign1/src/java/src)
