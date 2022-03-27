@@ -1,8 +1,9 @@
 # CPD Projects - Group T10G01
 
-| Group Members                      |                |                   |
-| ---------------------------------- | -------------- | ----------------- |
+## Group Members
+
 | Name                               | Student Number | Email             |
+| ---------------------------------- | -------------- | ----------------- |
 | Afonso Duarte de Carvalho Monteiro | up201907284    | up201907284@up.pt |
 | Miguel Lopes                       | up201704590    | up201704590@up.pt |
 | Vasco Alves                        | up201808031    | up201808031@up.pt |
