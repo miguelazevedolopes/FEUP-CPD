@@ -212,10 +212,9 @@ void init_papi()
 int main(int argc, char *argv[])
 {
     char c;
-    // int lin, col, blockSize;
     int op;
     ofstream outputFile;
-    outputFile.open("output.txt");
+    outputFile.open("output1.txt");
     int EventSet = PAPI_NULL;
     long long values[3];
     int ret;
@@ -232,171 +231,152 @@ int main(int argc, char *argv[])
     if (ret != PAPI_OK)
         outputFile << "ERROR: PAPI_L1_DCM" << endl;
 
-    // ret = PAPI_add_event(EventSet, PAPI_L2_DCM);
-    // if (ret != PAPI_OK)
-    //     outputFile << "ERROR: PAPI_L2_DCM" << endl;
-
     ret = PAPI_add_event(EventSet, PAPI_LD_INS);
     if (ret != PAPI_OK)
         outputFile << "ERROR: PAPI_LD_INS" << endl;
 
     ret = PAPI_add_event(EventSet, PAPI_SR_INS);
-    if (ret != PAPI_OK)
+    if (ret != PAPI_OK){
         outputFile << "ERROR: PAPI_SR_INS" << endl;
+    }
 
-    // ret = PAPI_add_event(EventSet, PAPI_VEC_SP);
-    // if (ret != PAPI_OK)
-    //     outputFile << "ERROR: PAPI_VEC_SP" << endl;
 
-    // ret = PAPI_add_event(EventSet, PAPI_VEC_DP);
-    // if (ret != PAPI_OK)
-    //     outputFile << "ERROR: PAPI_VEC_DP" << endl;
+    for(int i=600;i<=3000;i+=400){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMult(i, i,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    // for(int i=600;i<=3000;i+=400){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     OnMult(i, i,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
-
-    //     outputFile << values[0]<<endl;
-    //     outputFile <<values[1]<<endl;
-    //     outputFile <<values[2]<<endl;
-    //     // outputFile <<values[3]<<endl;
-    //     // outputFile <<values[4]<<endl;
-    //     // outputFile <<values[5]<<endl;
-    //     outputFile <<"--------"<<endl;
-    // }
+        outputFile << values[0]<<endl;
+        outputFile <<values[1]<<endl;
+        outputFile <<values[2]<<endl;
+        outputFile <<"--------"<<endl;
+    }
 
     
 
-    // for(int i=600;i<=3000;i+=400){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     OnMultLine(i, i,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
+    for(int i=600;i<=3000;i+=400){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMultLine(i, i,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    //     outputFile <<values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile <<values[2]<<endl;
-    //     outputFile <<"--------"<<endl;
-    // }
+        outputFile <<values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile <<values[2]<<endl;
+        outputFile <<"--------"<<endl;
+    }
 
     
 
     
-    // for(int i=4096;i<=10240;i+=2048){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
 
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     OnMultLine(i, i,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        OnMultLine(i, i,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    //     outputFile << values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile << values[2]<<endl;
-    //     // outputFile << values[3]<<endl;
-    //     outputFile <<"--------"<<endl;
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile <<"--------"<<endl;
 
-    // }
+    }
 
     
-    OnMultBlock(4096, 4096, 128,outputFile);
+   
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 128<<endl;
+        OnMultBlock(i, i, 128,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    // for(int i=4096;i<=10240;i+=2048){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     outputFile<< "Block size:"<< 128<<endl;
-    //     OnMultBlock(i, i, 128,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
-
-    //     outputFile << values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile << values[2]<<endl;
-    //     // outputFile << values[3]<<endl;
-    //     outputFile <<"--------"<<endl;
-    // }
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile <<"--------"<<endl;
+    }
 
     
     
     
 
-    // for(int i=4096;i<=10240;i+=2048){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     outputFile<< "Block size:"<< 256<<endl;
-    //     OnMultBlock(i, i, 256,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 256<<endl;
+        OnMultBlock(i, i, 256,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    //     outputFile << values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile << values[2]<<endl;
-    //     // outputFile << values[3]<<endl;
-    //     outputFile <<"--------"<<endl;
-    // }
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile <<"--------"<<endl;
+    }
 
     
 
 
-    // for(int i=4096;i<=10240;i+=2048){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
 
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     outputFile<< "Block size:"<< 512<<endl;
-    //     OnMultBlock(i, i, 512,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 512<<endl;
+        OnMultBlock(i, i, 512,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    //     outputFile <<  values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile << values[2]<<endl;
-    //     // outputFile << values[3]<<endl;
-    //     outputFile <<"--------"<<endl;
+        outputFile <<  values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile <<"--------"<<endl;
 
-    // }
+    }
 
     
     
-    // for(int i=4096;i<=10240;i+=2048){
-    //     ret = PAPI_start(EventSet);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Start PAPI" << endl;
-    //     outputFile << "Matrix size: "<<i<<endl;
-    //     outputFile<< "Block size:"<< 1024<<endl;
-    //     OnMultBlock(i, i, 1024,outputFile);
-    //     ret = PAPI_stop(EventSet, values);
-    //     if (ret != PAPI_OK)
-    //         outputFile << "ERROR: Stop PAPI" << endl;
+    for(int i=4096;i<=10240;i+=2048){
+        ret = PAPI_start(EventSet);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Start PAPI" << endl;
+        outputFile << "Matrix size: "<<i<<endl;
+        outputFile<< "Block size:"<< 1024<<endl;
+        OnMultBlock(i, i, 1024,outputFile);
+        ret = PAPI_stop(EventSet, values);
+        if (ret != PAPI_OK)
+            outputFile << "ERROR: Stop PAPI" << endl;
 
-    //     outputFile << values[0]<<endl;
-    //     outputFile << values[1]<<endl;
-    //     outputFile << values[2]<<endl;
-    //     // outputFile << values[3]<<endl;
-    //     outputFile <<"--------"<<endl;
+        outputFile << values[0]<<endl;
+        outputFile << values[1]<<endl;
+        outputFile << values[2]<<endl;
+        outputFile <<"--------"<<endl;
     
-    // }
+    }
 
     
     ret = PAPI_reset(EventSet);
@@ -407,25 +387,14 @@ int main(int argc, char *argv[])
     if (ret != PAPI_OK)
         outputFile << "FAIL remove event" << endl;
 
-    // ret = PAPI_remove_event(EventSet, PAPI_L2_DCM);
-    // if (ret != PAPI_OK)
-    //     outputFile << "FAIL remove event" << endl;
-
-    ret = PAPI_remove_event(EventSet, PAPI_LD_INS);
+    ret = PAPI_remove_event(EventSet, PAPI_L2_DCM);
     if (ret != PAPI_OK)
         outputFile << "FAIL remove event" << endl;
 
-    ret = PAPI_remove_event(EventSet, PAPI_SR_INS);
+    ret = PAPI_remove_event(EventSet, PAPI_LST_INS);
     if (ret != PAPI_OK)
         outputFile << "FAIL remove event" << endl;
     
-    // ret = PAPI_remove_event(EventSet, PAPI_SP_OPS);
-    // if (ret != PAPI_OK)
-    //     outputFile << "FAIL remove event" << endl;
-    
-    // ret = PAPI_remove_event(EventSet, PAPI_DP_OPS);
-    // if (ret != PAPI_OK)
-    //     outputFile << "FAIL remove event" << endl;
 
     ret = PAPI_destroy_eventset(&EventSet);
     if (ret != PAPI_OK)
