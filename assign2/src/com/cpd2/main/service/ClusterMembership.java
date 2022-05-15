@@ -2,7 +2,7 @@ package com.cpd2.main.service;
 
 
 /**
- * This interface allows the user to add/remove nodes to the cluster.
+ * This class allows the user to add/remove nodes to the cluster.
  */
 public interface ClusterMembership {
 
