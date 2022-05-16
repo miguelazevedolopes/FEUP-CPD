@@ -7,16 +7,18 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.StandardSocketOptions;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Node implements ClusterMembership, KeyValueStore{
 
     DatagramSocket sender=null;
     NetworkInterface outgoingIf;
+    private final Map<Object, Object> storage;
     
 
     Node(){
-        
-            
+        this.storage = new HashMap<>();
         
 
         
@@ -40,20 +42,22 @@ public class Node implements ClusterMembership, KeyValueStore{
 
     @Override
     public void put(Object key, Object value) {
-        // TODO Auto-generated method stub
-        
+        storage.put(key, value);
     }
 
     @Override
     public Object get(Object key) {
-        // TODO Auto-generated method stub
-        return null;
+        if (storage.containsKey(key)) {
+            return storage.get(key);
+        }
+        return -1;
     }
 
     @Override
     public void delete(Object key) {
-        // TODO Auto-generated method stub
-        
+        if (storage.containsKey(key)) {
+            storage.remove(key);
+        }
     }
 
     @Override
