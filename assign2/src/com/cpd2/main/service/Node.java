@@ -1,71 +1,39 @@
 package com.cpd2.main.service;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import java.net.StandardSocketOptions;
 
-public class Node implements ClusterMembership, KeyValueStore{
+public class Node{
 
-    DatagramSocket sender=null;
-    NetworkInterface outgoingIf;
+    MulticastService multicastService;    
+
+    MembershipView membershipView;
+    MembershipLog membershipLog;
     
 
-    Node(){
+    Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
         
-            
-        
+        // Setting up multicast communication
+        multicastService=new MulticastService(multicastAddressString,multicastPort);
 
-        
-    }
-    
-    private void sendMessage(byte[] msgBytes,String multicastAddressString){
-        try{
-            sender = new DatagramSocket(new InetSocketAddress(0));
-            NetworkInterface outgoingIf = NetworkInterface.getByName("lo");
-            sender.setOption(StandardSocketOptions.IP_MULTICAST_IF, outgoingIf);
-            InetAddress mcastaddr = InetAddress.getByName(multicastAddressString);
-            int port = 7373;
-            InetSocketAddress dest = new InetSocketAddress(mcastaddr, port);
-            DatagramPacket packet = new DatagramPacket(msgBytes, msgBytes.length, dest);
-            sender.send(packet);
-        }
-        catch (Exception e){
+        membershipView = new MembershipView(nodeID, 0);
 
-        }
+        membershipLog = new MembershipLog(nodeID,0);
+
+        TCPServer tcpServer = new TCPServer<MembershipMessage>(7000+nodeID);
+        
+        sendJoinMessage();
+
+        // Aguardar por resposta TCP, senão voltar a enviar join message
     }
 
-    @Override
-    public void put(Object key, Object value) {
-        // TODO Auto-generated method stub
-        
-    }
 
-    @Override
-    public Object get(Object key) {
-        // TODO Auto-generated method stub
-        return null;
+    private void sendJoinMessage(){
+        MembershipMessage message = new MembershipMessage(membershipView, membershipLog);
+        multicastService.sendMulticastMessage(message);
     }
-
-    @Override
-    public void delete(Object key) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void join() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void leave() {
-        // TODO Auto-generated method stub
-        
-    }
-
+   
 }
