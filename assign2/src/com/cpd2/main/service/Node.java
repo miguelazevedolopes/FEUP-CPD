@@ -1,41 +1,48 @@
 package com.cpd2.main.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-import java.net.StandardSocketOptions;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class Node implements KeyValueStore{
+public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
 
-    MulticastService multicastService;    
+    MulticastService<MembershipMessage> multicastService;
+    UnicastService<MembershipMessage> unicastService;
     MembershipView membershipView;
     MembershipLog membershipLog;
+    boolean stop =false;
     private final Map<Object, Object> storage;
 
 
-    Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
+    public Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
 
         this.storage = new HashMap<>();
         
         // Setting up multicast communication
-        multicastService=new MulticastService(multicastAddressString,multicastPort);
+        multicastService=new MulticastService<MembershipMessage>(multicastAddressString,multicastPort);
 
         membershipView = new MembershipView(nodeID, 0);
 
         membershipLog = new MembershipLog(nodeID,0);
 
-        TCPServer tcpServer = new TCPServer<MembershipMessage>(7000+nodeID);
+        // Setting up unicast communication
+        unicastService = new UnicastService<MembershipMessage>();
         
-        sendJoinMessage();
-
-        // Aguardar por resposta TCP, senão voltar a enviar join message
     }
 
+    public synchronized void stopService() {
+        this.stop = true;
+    }
 
-    private void sendJoinMessage(){
+    private synchronized boolean keepRunning() {
+        return this.stop == false;
+    }
+
+    private void sendMulticastMembershipMessage(){
         MembershipMessage message = new MembershipMessage(membershipView, membershipLog);
         multicastService.sendMulticastMessage(message);
     }
@@ -60,16 +67,63 @@ public class Node implements KeyValueStore{
         }
     }
 
-    // @Override
-    // public void join() {
-    //     // TODO Auto-generated method stub
+    @Override
+    public void join() {
+        // Starts listening for membership message
+        unicastService.startUnicastReceiver(7000+this.membershipView.nodeID);
         
-    // }
 
-    // @Override
-    // public void leave() {
-    //     // TODO Auto-generated method stub
+
+        System.out.println("Sent join message");
+
+        int tries=0;
+
+        // Sends join message (includes MembershipView and MembershipLog)
+        while(unicastService.getNumberOfObjectsReceived()!=3&&tries!=3){
+            try {
+                
+                sendMulticastMembershipMessage();
+                System.out.println("Try");
+                Thread.sleep(2000);
+                tries++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }   
+        }
         
-    // }
+        System.out.println("Aqui");
+        if(tries==3 && unicastService.getNumberOfObjectsReceived()==0){
+            System.out.println("No response. Must be the first node");
+            multicastService.startMulticastReceiver();
+            System.out.println("Receiving on multicast");
+            
+            Runnable periodicMessage = new Runnable() {
+                public void run() {
+                    while(true){
+                        System.out.println("Periodic membership message sent.");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+            while(keepRunning()){
+                
+                if(multicastService.getReceiverMessageSize()!=0){
+                    // insert update log + membership function here
+                }
+
+                periodicMessage.run();
+            }
+        }        
+    }
+
+    @Override
+    public void leave() {
+
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.cpd2.main.service;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -9,11 +10,11 @@ import java.net.NetworkInterface;
 import java.util.LinkedList;
 
 
-public class MulticastServiceReceive extends Thread{
+public class MulticastServiceReceive<T extends Serializable> extends Thread{
     private DatagramSocket receiver=null;
-    InetSocketAddress group;
-    private boolean doStop = false;
-    LinkedList<MembershipMessage> messagesReceived=new LinkedList<>();
+    private InetSocketAddress group;
+    private boolean stop = false;
+    private LinkedList<T> messagesReceived=new LinkedList<>();
 
     public MulticastServiceReceive(String multicastAddress, Integer multicastPort){
         try {
@@ -50,19 +51,25 @@ public class MulticastServiceReceive extends Thread{
     }
 
     public synchronized void stopService() {
-        this.doStop = true;
+        this.stop = true;
     }
 
     private synchronized boolean keepRunning() {
-        return this.doStop == false;
+        return this.stop == false;
     }
 
-    private boolean isMessageListEmpty(){
-        return messagesReceived.isEmpty();
+    public Integer getMessageListSize(){
+        return messagesReceived.size();
     }
 
-    private MembershipMessage getMessage(){
-        return messagesReceived.removeFirst();
+    public T getMessage(){
+        if(!messagesReceived.isEmpty())
+            return messagesReceived.removeFirst();
+        return null;
+    }
+
+    public LinkedList<T> getMessages(){
+        return messagesReceived;
     }
 
     @Override
