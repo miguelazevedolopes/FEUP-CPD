@@ -1,6 +1,5 @@
 package com.cpd2.main;
 
-import com.cpd2.main.service.MembershipView;
 import com.cpd2.main.service.Node;
 
 public class Main {
