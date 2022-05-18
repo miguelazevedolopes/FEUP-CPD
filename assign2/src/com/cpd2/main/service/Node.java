@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import java.net.StandardSocketOptions;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class Node implements KeyValueStore{
     private final Map<Object, Object> storage;
 
 
-    Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
+    Node(String multicastAddressString, Integer multicastPort, Integer nodeID) throws NoSuchAlgorithmException{
 
         this.storage = new HashMap<>();
         
