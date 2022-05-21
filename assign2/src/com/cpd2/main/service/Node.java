@@ -87,7 +87,6 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
             }   
         }
         
-        System.out.println("Aqui");
         if(tries==3 && unicastService.getNumberOfObjectsReceived()==0){
             System.out.println("No response. Must be the first node");
             multicastService.startMulticastReceiver();
@@ -107,7 +106,6 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
                 }
             };
             while(keepRunning()){
-                
                 if(multicastService.getReceiverMessageSize()!=0){
                     // insert update log + membership function here
                 }

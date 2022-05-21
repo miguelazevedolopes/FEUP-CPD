@@ -15,11 +15,13 @@ public class MembershipView implements Serializable{
     int membershipCount;
     int nodeID;
     String nodeHash;
+    int port;
 
     public MembershipView(int nodeID,int membershipCount){
         this.membershipCount=membershipCount;
         this.nodeID=nodeID;
         this.nodeHash = generateHash();
+        this.port=7000+nodeID;
         saveMembershipInfo();
     }
 
@@ -30,6 +32,8 @@ public class MembershipView implements Serializable{
             MembershipView object = (MembershipView) o.readObject();
             this.membershipCount=object.membershipCount;
             this.nodeID=object.nodeID;
+            this.nodeHash=object.nodeHash;
+            this.port=object.port;
             o.close();
             fStream.close();
         } catch (Exception e) {
