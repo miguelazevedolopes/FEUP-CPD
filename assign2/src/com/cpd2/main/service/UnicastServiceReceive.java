@@ -32,13 +32,18 @@ public class UnicastServiceReceive<T extends Serializable> extends Thread {
 
     @Override
     public void run() {
+        Socket socket =  null;
         try (ServerSocket serverSocket = new ServerSocket(port)) {  
             while (keepRunning()) {
-                Socket socket = serverSocket.accept();
+                socket = serverSocket.accept();
                 InputStream input = socket.getInputStream();
                 ObjectInputStream receiver = new ObjectInputStream(input);
                 objectsReceived.add((T) receiver.readObject());
+                socket.close();
             }
+            socket.close();
+            serverSocket.close();
+        
  
         } catch (Exception ex) {
             System.out.println("TCP Server exception: " + ex.getMessage());

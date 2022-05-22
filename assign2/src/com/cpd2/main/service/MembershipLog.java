@@ -3,9 +3,7 @@ package com.cpd2.main.service;
 import com.cpd2.main.Pair;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MembershipLog implements Serializable{
     //private Map<Integer,Integer> membershipLog=new HashMap<>();
@@ -46,11 +44,20 @@ public class MembershipLog implements Serializable{
         memLog.add(toBeAdded);
     }
 
-    void checkUpdated(List<Pair<Integer, Integer>> toBeCompared)
+    void checkUpdated(MembershipLog toBeCompared)
     {
-        for(int i = 0; i < toBeCompared.size(); i++)
+        for(int i = 0; i < toBeCompared.memLog.size(); i++)
         {
-            updateNodeView(toBeCompared.get(i).getL(), toBeCompared.get(i).getR());
+            updateNodeView(toBeCompared.memLog.get(i).getL(), toBeCompared.memLog.get(i).getR());
         }
+    }
+
+    boolean has(Integer nodeID){
+        for (Pair<Integer,Integer> pair : memLog) {
+            if(pair.getL()==nodeID){
+                return true;
+            }
+        }
+        return false;
     }
 }

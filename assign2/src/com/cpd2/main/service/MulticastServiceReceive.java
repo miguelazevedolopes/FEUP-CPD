@@ -1,6 +1,8 @@
 package com.cpd2.main.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -43,9 +45,14 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
         DatagramPacket packet = new DatagramPacket(msgBytes, msgBytes.length);
         try {
             receiver.receive(packet);
-            
-        } catch (IOException e) {
+            ByteArrayInputStream bos = new ByteArrayInputStream(msgBytes);
+            ObjectInputStream o = new ObjectInputStream(bos);
+            T object = (T) o.readObject();
+
+            messagesReceived.add(object);
+        } catch (Exception e) {
             // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -77,6 +84,7 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
         while(keepRunning()){
             receiveMulticastMessage();
         }
+        receiver.close();
     }
 
     

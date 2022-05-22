@@ -11,6 +11,7 @@ public class MulticastService<T extends Serializable>{
     private Integer multicastPort;
     private MulticastServiceReceive<T> receiver;
     private MulticastServiceSend sender;
+    private MulticastServiceSend periodicSender;
 
     public MulticastService(String multicastAddress, Integer multicastPort){
         this.multicastAddress=multicastAddress;
@@ -62,6 +63,40 @@ public class MulticastService<T extends Serializable>{
         }
         
         sender.start();
+    }
+
+    public void sendPeriodicMulticastMessage(T messageToSend,Integer period){
+        periodicSender = new MulticastServiceSend(multicastAddress, multicastPort, period);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream o;
+        try {
+            o = new ObjectOutputStream(bos);                
+            o.writeObject(messageToSend);
+            o.flush();
+            periodicSender.setMessageToSend(bos.toByteArray());
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        periodicSender.start();
+    }
+
+    public void stopPeriodicMulticastSender(){
+        periodicSender.stopService();
+    }
+
+    public void updatePeriodicMessage(T messageToSend){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream o;
+        try {
+            o = new ObjectOutputStream(bos);                
+            o.writeObject(messageToSend);
+            o.flush();
+            periodicSender.setMessageToSend(bos.toByteArray());
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

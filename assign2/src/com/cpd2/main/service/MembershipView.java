@@ -15,6 +15,7 @@ public class MembershipView implements Serializable{
     int membershipCount;
     int nodeID;
     String nodeHash;
+    String ipAddress;
     int port;
 
     public MembershipView(int nodeID,int membershipCount){
@@ -97,13 +98,8 @@ public class MembershipView implements Serializable{
         
     }
 
-    @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return "membershipCount:"+this.membershipCount+"\nnodeID="+this.nodeID;
+    public void increaseMembershipCount(){
+        this.membershipCount++;
     }
-
-
-
 
 }
