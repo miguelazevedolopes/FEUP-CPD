@@ -30,6 +30,14 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         
     }
 
+    public MembershipView getMembershipView() {
+        return membershipView;
+    }
+
+    public Map<Object, Object> getStorage() {
+        return storage;
+    }
+
     public synchronized void stopService() {
         this.stop = true;
     }
