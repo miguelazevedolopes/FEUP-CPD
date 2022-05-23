@@ -1,7 +1,9 @@
 package com.cpd2.main.service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 
 public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
@@ -12,11 +14,19 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
     MembershipLog membershipLog;
     boolean stop =false;
     private final Map<Object, Object> storage;
+    private TreeSet<Node> clusterNodes;
 
 
     public Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
 
         this.storage = new HashMap<>();
+        this.clusterNodes = new TreeSet<Node>(new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+                // TODO: does this work?
+                return o1.getMembershipView().getNodeHash().compareTo(o2.getMembershipView().getNodeHash());
+            }
+        });
         
         // Setting up multicast communication
         multicastService=new MulticastService<MembershipMessage>(multicastAddressString,multicastPort);
@@ -38,6 +48,34 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         return storage;
     }
 
+    public void addNode(Node node) {
+        clusterNodes.add(node);
+        transferOnJoin(node);
+    }
+
+    public void removeNode(Node node) {
+        transferOnLeave(node);
+        clusterNodes.remove(node);
+    }
+
+    public Node getSuccessor(Node node) {
+        if (clusterNodes.last().equals(node)) {
+            return clusterNodes.first();
+        }
+        else {
+            // TODO: does this work?
+            return clusterNodes.higher(node);
+        }
+    }
+
+    public void transferOnLeave(Node node) {
+
+    }
+
+    public void transferOnJoin(Node node) {
+
+    }
+
     public synchronized void stopService() {
         this.stop = true;
     }
@@ -50,7 +88,7 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         MembershipMessage message = new MembershipMessage(membershipView, membershipLog);
         multicastService.sendMulticastMessage(message);
     }
-   
+
     @Override
     public void put(Object key, Object value) {
         storage.put(key, value);
