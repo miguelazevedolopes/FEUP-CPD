@@ -18,10 +18,11 @@ public class MembershipView implements Serializable{
     String ipAddress;
     int port;
 
-    public MembershipView(int nodeID,int membershipCount){
+    public MembershipView(int nodeID,int membershipCount,String ipAddress){
         this.membershipCount=membershipCount;
         this.nodeID=nodeID;
         this.nodeHash = generateHash();
+        this.ipAddress=ipAddress;
         this.port=7000+nodeID;
         saveMembershipInfo();
     }

@@ -16,7 +16,7 @@ public class MembershipMessage implements Serializable {
     
     public MembershipMessage(MembershipView mv,MembershipLog ml, MessageType type){
         this.mView=mv;
-        this.mLog=ml;
+        this.mLog=ml.copy();
         this.type=type;
     }
     

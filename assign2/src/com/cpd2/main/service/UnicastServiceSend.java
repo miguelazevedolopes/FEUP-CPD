@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class UnicastServiceSend extends Thread{
-    Integer port;
+    int port;
     String ipAddress;
     Object msgToSend;
 
@@ -31,6 +31,7 @@ public class UnicastServiceSend extends Thread{
             OutputStream output = socket.getOutputStream();
             ObjectOutputStream sender = new ObjectOutputStream(output);
             sender.writeObject(msgToSend);
+            socket.close();
 
         } catch (UnknownHostException ex) {
  

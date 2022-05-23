@@ -7,7 +7,7 @@ public class UnicastService<T extends Serializable> {
     UnicastServiceReceive<T> receiver = null;
     UnicastServiceSend sender =null;
 
-    public void startUnicastReceiver(Integer port){
+    public void startUnicastReceiver(int port){
         receiver= new UnicastServiceReceive<T>(port);
         receiver.start();
     }
@@ -16,7 +16,7 @@ public class UnicastService<T extends Serializable> {
         receiver.stopService();
     }
 
-    public Integer getNumberOfObjectsReceived(){
+    public int getNumberOfObjectsReceived(){
         return receiver.numberOfObjectsReceived();
     }
 
@@ -25,10 +25,10 @@ public class UnicastService<T extends Serializable> {
     }
 
     public T getLastObjectReceived(){
-        return receiver.getObjectReceived().size()>0 ? receiver.getObjectReceived().get(0) : null; 
+        return receiver.getLastUnicastObjectReceived(); 
     }
 
-    public void sendUnicastMessage(Integer port, String ipAddress, T messageToSend){
+    public void sendUnicastMessage(int port, String ipAddress, T messageToSend){
         sender = new UnicastServiceSend(port, ipAddress);
         sender.setObjectToSend(messageToSend);
         sender.start();

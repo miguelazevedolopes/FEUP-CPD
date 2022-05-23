@@ -12,7 +12,7 @@ public class MulticastServiceSend extends Thread{
     private DatagramSocket sender=null;
     private byte[] messageToSend;
     InetSocketAddress dest;
-    Integer period=-1;
+    int period=-1;
     private Boolean stop=false, updatingMessage=false;
 
     public synchronized void stopService() {
@@ -23,7 +23,7 @@ public class MulticastServiceSend extends Thread{
         return this.stop == false;
     }
 
-    public MulticastServiceSend(String multicastAddressString, Integer multicastPort){
+    public MulticastServiceSend(String multicastAddressString, int multicastPort){
         try {
 
             // Setting up multicast send
@@ -39,7 +39,7 @@ public class MulticastServiceSend extends Thread{
         }
     }
 
-    public MulticastServiceSend(String multicastAddressString, Integer multicastPort, Integer period){
+    public MulticastServiceSend(String multicastAddressString, int multicastPort, int period){
         try {
             // Setting up multicast send
             sender = new DatagramSocket(new InetSocketAddress(0));

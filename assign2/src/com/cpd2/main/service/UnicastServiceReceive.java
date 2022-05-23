@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UnicastServiceReceive<T extends Serializable> extends Thread {
 
-    private Integer port;
+    private int port;
     private List<T> objectsReceived=new ArrayList<T>();
     private boolean doStop=false;
 
@@ -20,6 +20,13 @@ public class UnicastServiceReceive<T extends Serializable> extends Thread {
 
     public List<T> getObjectReceived() {
         return objectsReceived;
+    }
+
+    public T getLastUnicastObjectReceived(){
+        if(!objectsReceived.isEmpty()){
+            return objectsReceived.remove(0);
+        }
+        return null;
     }
 
     public synchronized void stopService() {
@@ -32,26 +39,25 @@ public class UnicastServiceReceive<T extends Serializable> extends Thread {
 
     @Override
     public void run() {
-        Socket socket =  null;
+        
         try (ServerSocket serverSocket = new ServerSocket(port)) {  
+            Socket socket=null;
+            InputStream input=null;
             while (keepRunning()) {
                 socket = serverSocket.accept();
-                InputStream input = socket.getInputStream();
+                input = socket.getInputStream();
                 ObjectInputStream receiver = new ObjectInputStream(input);
                 objectsReceived.add((T) receiver.readObject());
-                socket.close();
             }
             socket.close();
-            serverSocket.close();
-        
- 
+            input.close();
         } catch (Exception ex) {
             System.out.println("TCP Server exception: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
 
-    public Integer numberOfObjectsReceived(){
+    public int numberOfObjectsReceived(){
         return objectsReceived.size();
     }
     

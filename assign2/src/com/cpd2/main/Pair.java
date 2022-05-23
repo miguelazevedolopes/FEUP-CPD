@@ -1,6 +1,8 @@
 package com.cpd2.main;
 
-public class Pair<L,R> {
+import java.io.Serializable;
+
+public class Pair<L,R> implements Serializable{
     private L l;
     private R r;
 
@@ -17,8 +19,17 @@ public class Pair<L,R> {
 
     public void setR(R r){ this.r = r; }
 
-    public boolean isEqual(Pair<Integer, Integer> x)
+    @Override
+    public boolean equals(Object o)
     {
-        return (this.l == x.getL() && this.r == x.getR());
+        if (o == this) return true;
+        if (!(o instanceof Pair)) {
+            return false;
+        }
+
+        Pair<L,R> x = (Pair<L,R>) o;
+        
+        return (this.l.equals(x.getL()) && this.r.equals(x.getR()));
     }
+
 }

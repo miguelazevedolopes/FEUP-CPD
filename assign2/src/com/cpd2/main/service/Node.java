@@ -10,14 +10,17 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
     private final Map<Object, Object> storage;
 
 
-    public Node(String multicastAddressString, Integer multicastPort, Integer nodeID){
+    public Node(String multicastAddressString, int multicastPort, int nodeID, String nodeIpAddress){
 
         this.storage = new HashMap<>();
-        this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeID);
-        
+        this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeID, nodeIpAddress);
+        join();
     }
 
-   
+    public MembershipLog getMembershipLog(){
+        return membershipService.getMembershipLog();
+    }
+
     @Override
     public void put(Object key, Object value) {
         storage.put(key, value);

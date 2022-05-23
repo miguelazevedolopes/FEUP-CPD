@@ -18,7 +18,7 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
     private boolean stop = false;
     private LinkedList<T> messagesReceived=new LinkedList<>();
 
-    public MulticastServiceReceive(String multicastAddress, Integer multicastPort){
+    public MulticastServiceReceive(String multicastAddress, int multicastPort){
         try {
 
             // Setting up multicast receive
@@ -65,7 +65,7 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
         return this.stop == false;
     }
 
-    public Integer getMessageListSize(){
+    public int getMessageListSize(){
         return messagesReceived.size();
     }
 

@@ -8,12 +8,12 @@ import java.util.LinkedList;
 public class MulticastService<T extends Serializable>{   
     private boolean receiverStarted=false;
     private String multicastAddress;
-    private Integer multicastPort;
+    private int multicastPort;
     private MulticastServiceReceive<T> receiver;
     private MulticastServiceSend sender;
     private MulticastServiceSend periodicSender;
 
-    public MulticastService(String multicastAddress, Integer multicastPort){
+    public MulticastService(String multicastAddress, int multicastPort){
         this.multicastAddress=multicastAddress;
         this.multicastPort=multicastPort;
     }
@@ -44,7 +44,7 @@ public class MulticastService<T extends Serializable>{
         return receiver.getMessage();
     }
 
-    public Integer getReceiverMessageSize(){
+    public int getReceiverMessageSize(){
         return receiver.getMessageListSize();
     }
 
@@ -65,7 +65,7 @@ public class MulticastService<T extends Serializable>{
         sender.start();
     }
 
-    public void sendPeriodicMulticastMessage(T messageToSend,Integer period){
+    public void sendPeriodicMulticastMessage(T messageToSend,int period){
         periodicSender = new MulticastServiceSend(multicastAddress, multicastPort, period);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream o;
