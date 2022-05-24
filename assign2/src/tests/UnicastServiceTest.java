@@ -25,7 +25,7 @@ public class UnicastServiceTest {
 
         Thread.sleep(500);
         
-        unicastService.sendUnicastMessage(7001, "127.0.0.1", testMessage);
+        unicastService.sendUnicastMessage(7001, "127.0.0.2", testMessage);
 
         Thread.sleep(500);
 

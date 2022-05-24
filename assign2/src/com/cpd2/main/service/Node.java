@@ -13,10 +13,10 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
     private TreeSet<Node> clusterNodes;
 
 
-    public Node(String multicastAddressString, int multicastPort, int nodeID, String nodeIpAddress){
+    public Node(String multicastAddressString, int multicastPort, String nodeIpAddress, int nodePort){
 
         this.storage = new HashMap<>();
-        this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeID, nodeIpAddress);
+        this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeIpAddress,nodePort);
         join();
 
 

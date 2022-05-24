@@ -5,26 +5,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.cpd2.main.service.Node;
 
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 
 public class NodeTest {
     
     @Test
     public void testMembershipService() throws InterruptedException{
-        Node nodeOne = new Node("225.0.0.1",7373,1,"127.0.0.1");
+        Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7001);
 
         Thread.sleep(10000);
 
         assertEquals(1, nodeOne.getMembershipLog().getLogSize());
         
-        Node nodeTwo = new Node("225.0.0.1",7373,2,"127.0.0.1");
+        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7001);
 
         Thread.sleep(10000);
 
         assertEquals(2, nodeOne.getMembershipLog().getLogSize());
         assertEquals(2, nodeTwo.getMembershipLog().getLogSize());
 
-        Node nodeThree = new Node("225.0.0.1",7373,3,"127.0.0.1");
+        Node nodeThree = new Node("225.0.0.1",7373,"127.0.0.3",7001);
 
         Thread.sleep(10000);
 
@@ -32,9 +31,9 @@ public class NodeTest {
         assertEquals(3, nodeTwo.getMembershipLog().getLogSize());
         assertEquals(3, nodeThree.getMembershipLog().getLogSize());
 
-        Node nodeFour = new Node("225.0.0.1",7373,4,"127.0.0.1");
+        Node nodeFour = new Node("225.0.0.1",7373,"127.0.0.4",7001);
 
-        Thread.sleep(5000);
+        Thread.sleep(7000);
 
         assertEquals(4, nodeOne.getMembershipLog().getLogSize());
         assertEquals(4, nodeTwo.getMembershipLog().getLogSize());
@@ -49,10 +48,10 @@ public class NodeTest {
 
     @Test
     public void testLeaveService() throws InterruptedException{
-        Node nodeOne = new Node("225.0.0.1",7373,5,"127.0.0.1");
+        Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7001);
         Thread.sleep(10000);  
           
-        Node nodeTwo = new Node("225.0.0.1",7373,6,"127.0.0.1");
+        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7001);
         Thread.sleep(10000);
 
         nodeTwo.leave();
@@ -60,7 +59,7 @@ public class NodeTest {
         Thread.sleep(2000);
         System.out.println(nodeOne.getMembershipLog());
         assertEquals(2, nodeOne.getMembershipLog().getLogSize());
-        assertEquals(1, nodeOne.getMembershipLog().getMembershipCount(6));
+        assertEquals(1, nodeOne.getMembershipLog().getMembershipCount("127.0.0.2"));
 
         nodeOne.leave();
 

@@ -13,17 +13,17 @@ import java.io.Serializable;
 
 public class MembershipView implements Serializable{
     int membershipCount;
-    int nodeID;
-    String nodeHash;
-    String ipAddress;
-    int port;
+    String nodeIP = new String();
+    String nodeHash = new String();;
+    int membershipPort;
+    int storagePort;
 
-    public MembershipView(int nodeID,int membershipCount,String ipAddress){
+    public MembershipView(String nodeID,int membershipCount,int storagePort){
         this.membershipCount=membershipCount;
-        this.nodeID=nodeID;
+        this.nodeIP=nodeID;
         this.nodeHash = generateHash();
-        this.ipAddress=ipAddress;
-        this.port=7000+nodeID;
+        this.storagePort=storagePort;
+        this.membershipPort=storagePort+1;
         saveMembershipInfo();
     }
 
@@ -33,9 +33,9 @@ public class MembershipView implements Serializable{
             ObjectInputStream o = new ObjectInputStream(fStream);
             MembershipView object = (MembershipView) o.readObject();
             this.membershipCount=object.membershipCount;
-            this.nodeID=object.nodeID;
+            this.nodeIP=object.nodeIP;
             this.nodeHash=object.nodeHash;
-            this.port=object.port;
+            this.membershipPort=object.membershipPort;
             o.close();
             fStream.close();
         } catch (Exception e) {
@@ -46,6 +46,22 @@ public class MembershipView implements Serializable{
 
     public String getNodeHash() {
         return this.nodeHash;
+    }
+
+    public String getNodeIP(){
+        return this.nodeIP;
+    }
+
+    public int getMembershipCount(){
+        return this.membershipCount;
+    }
+
+    public int getMembershipPort(){
+        return this.membershipPort;
+    }
+
+    public int getStoragePort(){
+        return this.storagePort;
     }
 
     /**
@@ -61,7 +77,7 @@ public class MembershipView implements Serializable{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        byte[] hash = md.digest(Integer.toString(nodeID).getBytes(StandardCharsets.UTF_8));
+        byte[] hash = md.digest(nodeIP.getBytes(StandardCharsets.UTF_8));
         // Convert byte array into signum representation
         BigInteger number = new BigInteger(1, hash);
  
@@ -105,6 +121,18 @@ public class MembershipView implements Serializable{
 
     public void increaseMembershipCount(){
         this.membershipCount++;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof MembershipView)) {
+            return false;
+        }
+
+        MembershipView mv = (MembershipView) obj;
+        return this.membershipCount==mv.getMembershipCount()&&this.nodeIP.equals(mv.getNodeIP())
+        &&this.nodeHash.equals(mv.getNodeHash())&&this.membershipPort==mv.getMembershipPort()&&this.storagePort==mv.getStoragePort();
     }
 
 }

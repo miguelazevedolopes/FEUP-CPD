@@ -1,7 +1,6 @@
 package com.cpd2.main.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.DatagramPacket;
@@ -41,7 +40,7 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
      * Receives multicast message (this is probably going to change)
      */
     private void receiveMulticastMessage(){
-        byte[] msgBytes = new byte[1024]; // up to 1024 bytes
+        byte[] msgBytes = new byte[2048]; // up to 2048 bytes
         DatagramPacket packet = new DatagramPacket(msgBytes, msgBytes.length);
         try {
             receiver.receive(packet);
