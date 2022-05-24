@@ -44,6 +44,10 @@ public class MembershipView implements Serializable{
         }
     }
 
+    public String getNodeHash() {
+        return this.nodeHash;
+    }
+
     /**
      * Generates hash for the node id
      * @return Hash

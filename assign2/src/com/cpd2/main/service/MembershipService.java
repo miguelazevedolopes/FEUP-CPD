@@ -32,6 +32,10 @@ public class MembershipService extends Thread{
         return membershipLog;
     }
 
+    public MembershipView getMembershipView(){
+        return membershipView;
+    }
+
     private void handleMembershipMessage(MembershipMessage msg){
         if(msg.mView.nodeID==membershipView.nodeID) return;
         if(msg.type==MessageType.JOIN){
