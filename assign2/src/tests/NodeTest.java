@@ -8,12 +8,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 
 public class NodeTest {
-
-    @AfterEach
-    public void cleanup() throws InterruptedException{
-        // Making sure all connections are closed
-        Thread.sleep(10000);
-    }
     
     @Test
     public void testMembershipService() throws InterruptedException{
@@ -69,7 +63,6 @@ public class NodeTest {
         assertEquals(1, nodeOne.getMembershipLog().getMembershipCount(6));
 
         nodeOne.leave();
-        
 
     } 
 
