@@ -83,7 +83,7 @@ public class MembershipLog implements Serializable{
     public String toString() {
         String retString="";
         for (MembershipView mv : memLog) {
-            retString+= "Node ID: "+ mv.nodeIP+", Membership Count: "+mv.membershipCount+"\n";
+            retString+= "Node ID: "+ mv.getNodeIP()+", Membership Count: "+mv.getMembershipCount()+"\n";
         }
         return retString;
     }

@@ -19,7 +19,6 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeIpAddress,nodePort);
         join();
 
-
         this.clusterNodes = new TreeSet<Node>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
@@ -31,7 +30,7 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
     }
 
     public MembershipLog getMembershipLog(){
-        return membershipService.getMembershipLog();
+        return membershipService.getMembershipLogCopy();
     }
 
     public MembershipView getMembershipView() {

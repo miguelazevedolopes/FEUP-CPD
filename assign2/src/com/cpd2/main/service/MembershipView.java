@@ -12,11 +12,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class MembershipView implements Serializable{
-    int membershipCount;
-    String nodeIP = new String();
-    String nodeHash = new String();;
-    int membershipPort;
-    int storagePort;
+    private int membershipCount;
+    private String nodeIP = new String();
+    private String nodeHash = new String();;
+    private int membershipPort;
+    private int storagePort;
 
     public MembershipView(String nodeID,int membershipCount,int storagePort){
         this.membershipCount=membershipCount;
@@ -25,6 +25,7 @@ public class MembershipView implements Serializable{
         this.storagePort=storagePort;
         this.membershipPort=storagePort+1;
         saveMembershipInfo();
+        
     }
 
     public MembershipView(String pathToFile){
