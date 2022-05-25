@@ -1,15 +1,28 @@
 package com.cpd2.main.service;
 
+import java.util.TreeSet;
+
 public class StorageService extends Thread{
 
-    private UnicastService<MembershipMessage> unicastService;
+    private UnicastService<StorageMessage> unicastService;
     private MembershipService membershipService;
+    private TreeSet<String> nodeHashes;
     private boolean stop=false;
 
     public StorageService(MembershipService membershipService){
+        this.nodeHashes = new TreeSet<>();
+
         // Setting up unicast communication
-        this.unicastService = new UnicastService<MembershipMessage>();
+        this.unicastService = new UnicastService<StorageMessage>();
         this.membershipService=membershipService;
+    }
+
+    public void addNodeHash(String nodeHash) {
+        nodeHashes.add(nodeHash);
+    }
+
+    public void removeNodeHash(String nodeHash) {
+        nodeHashes.remove(nodeHash);
     }
 
     public synchronized void stopService() {
@@ -20,6 +33,10 @@ public class StorageService extends Thread{
         return this.stop == false;
     }
 
+    MembershipView getResponsibleNodeInfo(StorageMessage message, MembershipLog log) {
+        
+    }
+
 
     @Override
     public void run() {
@@ -28,7 +45,7 @@ public class StorageService extends Thread{
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
                 
-                MembershipMessage message = unicastService.getLastObjectReceived();
+                StorageMessage message = unicastService.getLastObjectReceived();
 
                 MembershipView nodeInfo= getResponsibleNodeInfo(message,membershipService.getMembershipLogCopy());
 
