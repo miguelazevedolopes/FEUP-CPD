@@ -18,15 +18,7 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         this.storage = new HashMap<>();
         this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeIpAddress,nodePort);
         join();
-
-        this.clusterNodes = new TreeSet<Node>(new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                // TODO: does this work?
-                return o1.getMembershipView().getNodeHash().compareTo(o2.getMembershipView().getNodeHash());
-            }
-        });
-        
+     
     }
 
     public MembershipLog getMembershipLog(){

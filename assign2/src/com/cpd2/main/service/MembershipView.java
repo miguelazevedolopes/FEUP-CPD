@@ -21,7 +21,7 @@ public class MembershipView implements Serializable{
     public MembershipView(String nodeID,int membershipCount,int storagePort){
         this.membershipCount=membershipCount;
         this.nodeIP=nodeID;
-        this.nodeHash = generateHash();
+        this.nodeHash = Utils.generateHash(nodeID);
         this.storagePort=storagePort;
         this.membershipPort=storagePort+1;
         saveMembershipInfo();
@@ -65,34 +65,7 @@ public class MembershipView implements Serializable{
         return this.storagePort;
     }
 
-    /**
-     * Generates hash for the node id
-     * @return Hash
-     * @throws NoSuchAlgorithmException
-     */
-    private String generateHash() {
-        MessageDigest md=null;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        byte[] hash = md.digest(nodeIP.getBytes(StandardCharsets.UTF_8));
-        // Convert byte array into signum representation
-        BigInteger number = new BigInteger(1, hash);
- 
-        // Convert message digest into hex value
-        StringBuilder hexString = new StringBuilder(number.toString(16));
- 
-        // Pad with leading zeros
-        while (hexString.length() < 64)
-        {
-            hexString.insert(0, '0');
-        }
- 
-        return hexString.toString();
-    }
+    
     
     /**
      * Saves membership info to persistent storage

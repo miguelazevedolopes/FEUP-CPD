@@ -33,8 +33,15 @@ public class StorageService extends Thread{
         return this.stop == false;
     }
 
-    MembershipView getResponsibleNodeInfo(StorageMessage message, MembershipLog log) {
-        
+    private MembershipView getResponsibleNodeInfo(StorageMessage message, MembershipLog log) {
+        String messageHash=Utils.generateHash(message.valueToStore);
+        String nodeHash=nodeHashes.higher(messageHash);
+        if(nodeHash!=null){
+            return log.getNodeInfo(nodeHash);
+        }
+        else{
+            return log.getNodeInfo(nodeHashes.first());
+        }
     }
 
 
@@ -44,13 +51,39 @@ public class StorageService extends Thread{
 
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
-                
                 StorageMessage message = unicastService.getLastObjectReceived();
 
+                // nao está great o facto de usar membership service assim, rever isso 
                 MembershipView nodeInfo= getResponsibleNodeInfo(message,membershipService.getMembershipLogCopy());
 
                 if(nodeInfo.getNodeIP().equals(membershipService.getMembershipView().getNodeIP())){
+                    switch (message.type){
+                        case PUT:
+                            // saveToFile();
+                            // replicate();
+                            break;
+                        case GET:
+                            // getFile();
+                            break;
+                        case DELETE:
+                            // deleteFile();
+                            // replicate();
+                            break;
+                        default:
+                            break;
+                    }
                     
+                }
+                else{
+                    unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+                }
+            }
+            else{
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
         }

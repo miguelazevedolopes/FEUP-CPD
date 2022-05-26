@@ -11,8 +11,10 @@ enum StorageMessageType {
 public class StorageMessage implements Serializable {
 
     StorageMessageType type;
+    String valueToStore;
 
-    public StorageMessage(StorageMessageType type) {
+    public StorageMessage(StorageMessageType type,String valueToStore) {
         this.type = type;
+        this.valueToStore=valueToStore;
     }
 }

@@ -78,6 +78,12 @@ public class MembershipLog implements Serializable{
         return -1;
     }
 
+    public MembershipView getNodeInfo(String nodeHash){
+        for (MembershipView membershipView : memLog) {
+            if(membershipView.getNodeHash().equals(nodeHash)) return membershipView;
+        }
+        return null;
+    }
 
     @Override
     public String toString() {
