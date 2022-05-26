@@ -30,16 +30,6 @@ public class Node implements ClusterMembership{
         return membershipService.getMembershipView();
     }
 
-    public Node getSuccessor(Node node) {
-        if (clusterNodes.last().equals(node)) {
-            return clusterNodes.first();
-        }
-        else {
-            // TODO: does this work?
-            return clusterNodes.higher(node);
-        }
-    }
-
     @Override
     public void join() {
         membershipService.start();
