@@ -70,7 +70,7 @@ public class MembershipView implements Serializable{
     /**
      * Saves membership info to persistent storage
      */
-    private void saveMembershipInfo(){
+    public void saveMembershipInfo(){
 
         // Creates directory in case it doesn't exist 
         new File("./storage/"+nodeHash).mkdirs();

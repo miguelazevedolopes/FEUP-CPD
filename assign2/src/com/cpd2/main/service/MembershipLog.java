@@ -21,25 +21,26 @@ public class MembershipLog implements Serializable{
      * @param membershipCount the new count to be set
      */
     void updateNodeView(MembershipView mv){
-
-        for(int i = 0; i < memLog.size(); i++)
-        {
-            //Event is already in the local log
-            if(memLog.get(i).equals(mv))
-                return;
-            //The event is older than the event for that member in the local log
-            else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() > mv.getMembershipCount())
-                return;
-            //Event is newer than the event for that member in the local log
-            else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() < mv.getMembershipCount())
+        synchronized(memLog){
+            for(int i = 0; i < memLog.size(); i++)
             {
-                memLog.remove(memLog.get(i));
-                memLog.add(mv);
-                return;
+                //Event is already in the local log
+                if(memLog.get(i).equals(mv))
+                    return;
+                //The event is older than the event for that member in the local log
+                else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() > mv.getMembershipCount())
+                    return;
+                //Event is newer than the event for that member in the local log
+                else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() < mv.getMembershipCount())
+                {
+                    memLog.remove(memLog.get(i));
+                    memLog.add(mv);
+                    return;
+                }
             }
+            //New event
+            memLog.add(mv);
         }
-        //New event
-        memLog.add(mv);
     }
 
     void checkUpdated(MembershipLog toBeCompared)

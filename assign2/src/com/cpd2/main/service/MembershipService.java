@@ -8,13 +8,13 @@ public class MembershipService extends Thread{
     private MembershipLog membershipLog;
     private boolean stop =false;
 
-    public MembershipService(String multicastAddressString, int multicastPort, String nodeIpAddress, int storagePort){
+    public MembershipService(String multicastAddressString, int multicastPort, MembershipView membershipView, MembershipLog membershipLog){
         // Setting up multicast communication
         multicastService=new MulticastService<MembershipMessage>(multicastAddressString,multicastPort);
 
-        membershipView = new MembershipView(nodeIpAddress, 0, storagePort);
+        this.membershipView = membershipView;
 
-        membershipLog = new MembershipLog(membershipView);
+        this.membershipLog = membershipLog;
 
         // Setting up unicast communication
         unicastService = new UnicastService<MembershipMessage>();
@@ -96,12 +96,12 @@ public class MembershipService extends Thread{
                 handleMembershipMessage(msg);
                 multicastService.updatePeriodicMessage(new MembershipMessage(membershipView, membershipLog,MessageType.PERIODIC));
             }
-            // try {
-            //     Thread.sleep(500);
-            // } catch (InterruptedException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            // }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         unicastService.stopUnicastReceiver();
@@ -111,6 +111,8 @@ public class MembershipService extends Thread{
         multicastService.stopPeriodicMulticastSender();
 
         membershipView.increaseMembershipCount();
+
+        membershipView.saveMembershipInfo();
 
         membershipLog.updateNodeView(membershipView);
 

@@ -5,16 +5,18 @@ import java.util.TreeSet;
 public class StorageService extends Thread{
 
     private UnicastService<StorageMessage> unicastService;
-    private MembershipService membershipService;
+    private MembershipLog membershipLog;
     private TreeSet<String> nodeHashes;
+    private MembershipView membershipView;
     private boolean stop=false;
 
-    public StorageService(MembershipService membershipService){
+    public StorageService(MembershipLog membershipLog, MembershipView membershipView){
         this.nodeHashes = new TreeSet<>();
 
         // Setting up unicast communication
         this.unicastService = new UnicastService<StorageMessage>();
-        this.membershipService=membershipService;
+        this.membershipLog=membershipLog;
+        this.membershipView=membershipView;
     }
 
     public void addNodeHash(String nodeHash) {
@@ -33,30 +35,29 @@ public class StorageService extends Thread{
         return this.stop == false;
     }
 
-    private MembershipView getResponsibleNodeInfo(StorageMessage message, MembershipLog log) {
+    private MembershipView getResponsibleNodeInfo(StorageMessage message) {
         String messageHash=Utils.generateHash(message.valueToStore);
         String nodeHash=nodeHashes.higher(messageHash);
         if(nodeHash!=null){
-            return log.getNodeInfo(nodeHash);
+            return membershipLog.getNodeInfo(nodeHash);
         }
         else{
-            return log.getNodeInfo(nodeHashes.first());
+            return membershipLog.getNodeInfo(nodeHashes.first());
         }
     }
 
 
     @Override
     public void run() {
-        unicastService.startUnicastReceiver(membershipService.getMembershipView().getStoragePort());
+        unicastService.startUnicastReceiver(membershipView.getStoragePort());
 
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
                 StorageMessage message = unicastService.getLastObjectReceived();
 
-                // nao está great o facto de usar membership service assim, rever isso 
-                MembershipView nodeInfo= getResponsibleNodeInfo(message,membershipService.getMembershipLogCopy());
+                MembershipView nodeInfo= getResponsibleNodeInfo(message);
 
-                if(nodeInfo.getNodeIP().equals(membershipService.getMembershipView().getNodeIP())){
+                if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
                     switch (message.type){
                         case PUT:
                             // saveToFile();

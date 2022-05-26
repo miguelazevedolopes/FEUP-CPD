@@ -6,17 +6,18 @@ import java.util.Map;
 import java.util.TreeSet;
 
 
-public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
+public class Node implements ClusterMembership{
 
     MembershipService membershipService;
-    private final Map<Object, Object> storage;
     private TreeSet<Node> clusterNodes;
 
 
     public Node(String multicastAddressString, int multicastPort, String nodeIpAddress, int nodePort){
 
-        this.storage = new HashMap<>();
-        this.membershipService=new MembershipService(multicastAddressString, multicastPort, nodeIpAddress,nodePort);
+        MembershipView membershipView = new MembershipView(nodeIpAddress, 0, nodePort);
+        MembershipLog membershipLog = new MembershipLog(membershipView);
+
+        this.membershipService=new MembershipService(multicastAddressString, multicastPort,membershipView,membershipLog);
         join();
      
     }
@@ -29,20 +30,6 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         return membershipService.getMembershipView();
     }
 
-    public Map<Object, Object> getStorage() {
-        return storage;
-    }
-
-    public void addNode(Node node) {
-        clusterNodes.add(node);
-        transferOnJoin(node);
-    }
-
-    public void removeNode(Node node) {
-        transferOnLeave(node);
-        clusterNodes.remove(node);
-    }
-
     public Node getSuccessor(Node node) {
         if (clusterNodes.last().equals(node)) {
             return clusterNodes.first();
@@ -50,34 +37,6 @@ public class Node implements KeyValueStore<Object,Object>,ClusterMembership{
         else {
             // TODO: does this work?
             return clusterNodes.higher(node);
-        }
-    }
-
-    public void transferOnLeave(Node node) {
-
-    }
-
-    public void transferOnJoin(Node node) {
-
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        storage.put(key, value);
-    }
-
-    @Override
-    public Object get(Object key) {
-        if (storage.containsKey(key)) {
-            return storage.get(key);
-        }
-        return -1;
-    }
-
-    @Override
-    public void delete(Object key) {
-        if (storage.containsKey(key)) {
-            storage.remove(key);
         }
     }
 
