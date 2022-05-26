@@ -1,5 +1,8 @@
 package com.cpd2.main.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.TreeSet;
 
 public class StorageService extends Thread{
@@ -46,6 +49,24 @@ public class StorageService extends Thread{
         }
     }
 
+    private void saveToFile(MembershipView nodeInfo, StorageMessage message) {
+        String messageHash = Utils.generateHash(message.valueToStore);
+        File f = new File("./storage/" + nodeInfo.getNodeHash() +"/" + messageHash);
+        try{
+
+            f.createNewFile();
+
+            FileOutputStream fStream = new FileOutputStream(f);
+            ObjectOutputStream o = new ObjectOutputStream(fStream);
+            o.writeObject(message.valueToStore);
+            o.close();
+            fStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void run() {
@@ -60,7 +81,7 @@ public class StorageService extends Thread{
                 if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
                     switch (message.type){
                         case PUT:
-                            // saveToFile();
+                            saveToFile(nodeInfo, message);
                             // replicate();
                             break;
                         case GET:
