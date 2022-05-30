@@ -85,6 +85,18 @@ public class MulticastService<T extends Serializable>{
         periodicSender.stopService();
     }
 
+    public void pausePeriodicMulticastSender(){
+        periodicSender.pauseService();
+    }
+
+    public void resumePeriodicMulticastSender(){
+        periodicSender.resumeService();
+    }
+
+    public boolean serviceIsPaused(){
+        return periodicSender.isPaused();
+    }
+
     public void updatePeriodicMessage(T messageToSend){
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream o;

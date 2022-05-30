@@ -7,13 +7,16 @@ import java.util.List;
 public class MembershipLog implements Serializable{
     //private Map<Integer,Integer> membershipLog=new HashMap<>();
     private List<MembershipView> memLog = new ArrayList<>();
-    
+    private boolean upToDate=false;
 
     MembershipLog(MembershipView mv){
         //membershipLog.put(nodeID, membershipCount);
         memLog.add(mv);
     }
 
+    public boolean isUpToDate(){
+        return upToDate;
+    }
 
     /**
      * Updates the log table, maintaining consistency in its logs
@@ -26,13 +29,21 @@ public class MembershipLog implements Serializable{
             {
                 //Event is already in the local log
                 if(memLog.get(i).equals(mv))
+                {
+                    upToDate=true;
                     return;
+                }
+                    
                 //The event is older than the event for that member in the local log
                 else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() > mv.getMembershipCount())
+                {
+                    upToDate=true;
                     return;
+                }
                 //Event is newer than the event for that member in the local log
                 else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() < mv.getMembershipCount())
                 {
+                    upToDate=false;
                     memLog.remove(memLog.get(i));
                     memLog.add(mv);
                     return;
@@ -51,7 +62,7 @@ public class MembershipLog implements Serializable{
         }
     }
 
-    public Boolean has(String nodeID){
+    public boolean has(String nodeID){
         for (MembershipView mv : memLog) {
             if(mv.getNodeIP().equals(nodeID)){
                 return true;
@@ -93,5 +104,15 @@ public class MembershipLog implements Serializable{
             retString+= "Node ID: "+ mv.getNodeIP()+", Membership Count: "+mv.getMembershipCount()+"\n";
         }
         return retString;
+    }
+
+    public int numberOfActiveNodes(){
+        int counter=0;
+        for (MembershipView membershipView : memLog) {
+            if(membershipView.getMembershipCount()%2==0){
+                counter++;
+            }
+        }
+        return counter;
     }
 }

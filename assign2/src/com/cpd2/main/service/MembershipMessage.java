@@ -2,7 +2,7 @@ package com.cpd2.main.service;
 
 import java.io.Serializable;
 
-enum MessageType{
+enum MembershipMessageType{
     JOIN,
     JOIN_RESPONSE,
     PERIODIC,
@@ -12,9 +12,9 @@ enum MessageType{
 public class MembershipMessage implements Serializable {
     MembershipView mView;
     MembershipLog mLog;
-    MessageType type;
+    MembershipMessageType type;
     
-    public MembershipMessage(MembershipView mv,MembershipLog ml, MessageType type){
+    public MembershipMessage(MembershipView mv,MembershipLog ml, MembershipMessageType type){
         this.mView=mv;
         this.mLog=ml.copy();
         this.type=type;

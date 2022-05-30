@@ -13,14 +13,26 @@ public class MulticastServiceSend extends Thread{
     private byte[] messageToSend;
     InetSocketAddress dest;
     int period=-1;
-    private Boolean stop=false, updatingMessage=false;
+    private boolean stop=false, updatingMessage=false, pause=false;
 
     public synchronized void stopService() {
         this.stop = true;
     }
 
+    public synchronized void pauseService() {
+        this.pause = true;
+    }
+
+    public synchronized void resumeService() {
+        this.pause = false;
+    }
+
     private synchronized boolean keepRunning() {
         return this.stop == false;
+    }
+
+    public synchronized boolean isPaused(){
+        return this.pause;
     }
 
     public MulticastServiceSend(String multicastAddressString, int multicastPort){
@@ -79,6 +91,7 @@ public class MulticastServiceSend extends Thread{
         }
         else{
             while(keepRunning()){
+                if(isPaused()) continue;
                 try{
                     if(!updatingMessage){
                         DatagramPacket packet = new DatagramPacket(messageToSend, messageToSend.length, dest);
