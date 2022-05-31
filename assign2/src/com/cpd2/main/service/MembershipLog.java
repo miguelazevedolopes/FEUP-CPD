@@ -3,6 +3,7 @@ package com.cpd2.main.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 public class MembershipLog implements Serializable{
     //private Map<Integer,Integer> membershipLog=new HashMap<>();
@@ -23,7 +24,7 @@ public class MembershipLog implements Serializable{
      * @param nodeID the node to be updated
      * @param membershipCount the new count to be set
      */
-    void updateNodeView(MembershipView mv){
+    void updateNodeView(MembershipView mv, TreeSet<String> nodeHashes){
         synchronized(memLog){
             for(int i = 0; i < memLog.size(); i++)
             {
@@ -33,7 +34,6 @@ public class MembershipLog implements Serializable{
                     upToDate=true;
                     return;
                 }
-                    
                 //The event is older than the event for that member in the local log
                 else if(memLog.get(i).getNodeIP().equals(mv.getNodeIP()) && memLog.get(i).getMembershipCount() > mv.getMembershipCount())
                 {
@@ -46,19 +46,31 @@ public class MembershipLog implements Serializable{
                     upToDate=false;
                     memLog.remove(memLog.get(i));
                     memLog.add(mv);
+                    if(mv.getMembershipCount()%2!=0){
+                        synchronized(nodeHashes){
+                            if(nodeHashes.contains(mv.getNodeHash())){
+                                nodeHashes.remove(mv.getNodeHash());
+                            }
+                        }
+                    }
                     return;
                 }
             }
             //New event
+            synchronized(nodeHashes){
+                if(!nodeHashes.contains(mv.getNodeHash())){
+                    nodeHashes.add(mv.getNodeHash());
+                }
+            }
             memLog.add(mv);
         }
     }
 
-    void checkUpdated(MembershipLog toBeCompared)
+    void checkUpdated(MembershipLog toBeCompared, TreeSet<String> nodeHashes)
     {
         for(int i = 0; i < toBeCompared.memLog.size(); i++)
         {
-            updateNodeView(toBeCompared.memLog.get(i));
+            updateNodeView(toBeCompared.memLog.get(i), nodeHashes);
         }
     }
 
@@ -106,7 +118,7 @@ public class MembershipLog implements Serializable{
         return retString;
     }
 
-    public int numberOfActiveNodes(){
+    public int getActiveNodeCount(){
         int counter=0;
         for (MembershipView membershipView : memLog) {
             if(membershipView.getMembershipCount()%2==0){

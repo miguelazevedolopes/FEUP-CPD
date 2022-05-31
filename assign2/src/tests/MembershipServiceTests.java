@@ -6,24 +6,25 @@ import com.cpd2.main.service.Node;
 
 import org.junit.Test;
 
-public class NodeTest {
+public class MembershipServiceTests {
+    
     
     @Test
-    public void testMembershipService() throws InterruptedException{
+    public void testJoinServiceLogCount() throws InterruptedException{
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7001);
 
         Thread.sleep(10000);
 
         assertEquals(1, nodeOne.getMembershipLog().getLogSize());
         
-        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7001);
+        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7003);
 
         Thread.sleep(10000);
 
         assertEquals(2, nodeOne.getMembershipLog().getLogSize());
         assertEquals(2, nodeTwo.getMembershipLog().getLogSize());
 
-        Node nodeThree = new Node("225.0.0.1",7373,"127.0.0.3",7001);
+        Node nodeThree = new Node("225.0.0.1",7373,"127.0.0.3",7005);
 
         Thread.sleep(10000);
 
@@ -47,11 +48,11 @@ public class NodeTest {
     }
 
     @Test
-    public void testLeaveService() throws InterruptedException{
+    public void testLeaveServiceLogCount() throws InterruptedException{
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7001);
         Thread.sleep(10000);  
           
-        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7001);
+        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7003);
         Thread.sleep(10000);
 
         nodeTwo.leave();
@@ -64,5 +65,6 @@ public class NodeTest {
         nodeOne.leave();
 
     } 
+
 
 }

@@ -1,4 +1,4 @@
-package com.cpd2.main.service;
+package com.cpd2.main.service.communication;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;

@@ -1,9 +1,5 @@
 package com.cpd2.main.service;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,14 +14,12 @@ public class MembershipView implements Serializable{
     private int membershipPort;
     private int storagePort;
 
-    public MembershipView(String nodeID,int membershipCount,int storagePort){
+    public MembershipView(String nodeIP,int membershipCount,int storagePort){
         this.membershipCount=membershipCount;
-        this.nodeIP=nodeID;
-        this.nodeHash = Utils.generateHash(nodeID);
+        this.nodeIP=nodeIP;
+        this.nodeHash = Utils.generateHash(nodeIP);
         this.storagePort=storagePort;
-        this.membershipPort=storagePort+1;
-        saveMembershipInfo();
-        
+        this.membershipPort=storagePort+1;        
     }
 
     public MembershipView(String pathToFile){
@@ -73,10 +67,12 @@ public class MembershipView implements Serializable{
     public void saveMembershipInfo(){
 
         // Creates directory in case it doesn't exist 
-        new File("./storage/"+nodeHash).mkdirs();
+        var temp=new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+nodeHash);
+        temp.mkdirs();
+        System.out.println(temp.getAbsolutePath());
         
         // Creates and saves the membership info to a file
-        File f= new File("./storage/"+nodeHash+"/"+"membership");
+        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+nodeHash+"/"+"membership");
         try{
 
             f.createNewFile();
@@ -88,6 +84,8 @@ public class MembershipView implements Serializable{
             fStream.close();
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            
             e.printStackTrace();
         }
         

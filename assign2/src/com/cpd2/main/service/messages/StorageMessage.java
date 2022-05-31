@@ -1,17 +1,13 @@
-package com.cpd2.main.service;
+package com.cpd2.main.service.messages;
 
 import java.io.Serializable;
 
-enum StorageMessageType {
-    GET,
-    PUT,
-    DELETE
-}
+import com.cpd2.main.service.messages.enums.StorageMessageType;
 
 public class StorageMessage implements Serializable {
 
-    StorageMessageType type;
-    String valueToStore;
+    public StorageMessageType type;
+    public String valueToStore;
 
     public StorageMessage(StorageMessageType type,String valueToStore) {
         this.type = type;

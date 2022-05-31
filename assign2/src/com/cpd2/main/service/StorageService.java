@@ -7,6 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.cpd2.main.service.communication.UnicastService;
+import com.cpd2.main.service.messages.PipeMessage;
+import com.cpd2.main.service.messages.StorageMessage;
+import com.cpd2.main.service.messages.enums.PipeMessageType;
+import com.cpd2.main.service.messages.enums.StorageMessageType;
+
 public class StorageService extends Thread{
 
     private UnicastService<StorageMessage> unicastService;
@@ -15,23 +21,24 @@ public class StorageService extends Thread{
     private MembershipView membershipView;
     private boolean stop=false;
     private LinkedList<PipeMessage> membershipStoragePipe;
-    private List<String> fileKeys= new ArrayList<>();
+    private List<String> ownedKeys= new ArrayList<>();
 
 
-    public StorageService(MembershipLog membershipLog, MembershipView membershipView,LinkedList<PipeMessage> membershipStoragePipe)
+    public StorageService(MembershipLog membershipLog, MembershipView membershipView, TreeSet<String> nodeHashes, LinkedList<PipeMessage> membershipStoragePipe)
     {
         
         this.membershipStoragePipe=membershipStoragePipe;
         this.membershipLog=membershipLog;
         this.membershipView=membershipView;
+        this.nodeHashes = nodeHashes;
 
         // Setting up unicast communication
         this.unicastService = new UnicastService<StorageMessage>();
 
-        this.nodeHashes = new TreeSet<>();
+        
     }
 
-    private synchronized void stopService() {
+    public synchronized void stopService() {
         this.stop = true;
     }
 
@@ -52,21 +59,43 @@ public class StorageService extends Thread{
         }
     }
 
-    private String getSuccessor(String nodeHash) {
-        if (nodeHashes.size() < 2) {
-            return null;
+    private void saveOwnedKeyList(){
+        
+        // Creates and saves the membership info to a file
+        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipView.getNodeHash()+"/"+"keys");
+
+        if(f.exists()) f.delete();
+
+        try{
+
+            f.createNewFile();
+
+            FileOutputStream fStream = new FileOutputStream(f);
+            ObjectOutputStream o = new ObjectOutputStream(fStream);
+            o.writeObject(ownedKeys);
+            o.close();
+            fStream.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            
+            e.printStackTrace();
         }
-        if (nodeHashes.last().equals(nodeHash)) {
+    }
+
+    private String getSuccessor(String nodeHash) {
+        if (nodeHashes.higher(nodeHash)==null) {
             return nodeHashes.first();
         }
         return nodeHashes.higher(nodeHash);
     }
 
-    private void saveToFile(MembershipView nodeInfo, StorageMessage message) {
-        String messageHash = Utils.generateHash(message.valueToStore);
-        File f = new File("./storage/" + nodeInfo.getNodeHash() +"/" + messageHash);
+    private void saveToFile(StorageMessage message) {
+        System.out.println("Node "+ membershipView.getNodeIP() + ": Saved the file to persistent memory");
+        String fileHash = Utils.generateHash(message.valueToStore);
+        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() +"/" + fileHash);
         try{
-
+            System.out.println(f.getAbsolutePath());
             f.createNewFile();
 
             FileOutputStream fStream = new FileOutputStream(f);
@@ -74,7 +103,10 @@ public class StorageService extends Thread{
             o.writeObject(message.valueToStore);
             o.close();
             fStream.close();
-
+            
+            ownedKeys.add(fileHash);
+            saveOwnedKeyList();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,12 +115,18 @@ public class StorageService extends Thread{
     private void handleJoin(PipeMessage msg){
         if(msg.type==PipeMessageType.JOIN){
             if(getSuccessor(msg.mView.getNodeHash()).equals(membershipView.getNodeHash())){
-                nodeHashes.add(msg.mView.getNodeHash());
-                for (String fileKey : fileKeys) {
+                List<String> toRemove=new ArrayList<>();
+                for (String fileKey : ownedKeys) {
                     String fileContent=getFromFile(fileKey);
                     if(getSuccessor(fileKey).equals(msg.mView.getNodeHash())){
                         unicastService.sendUnicastMessage(msg.mView.getStoragePort(), msg.mView.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent));
+                        toRemove.add(fileKey);
                     }
+                }
+                for (String fileToRemove : toRemove) {
+                    File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() + "/" + fileToRemove);
+                    f.delete();
+                    ownedKeys.remove(fileToRemove);
                 }
             }
         }
@@ -96,9 +134,15 @@ public class StorageService extends Thread{
 
     private void leaveTransfer(){
         MembershipView transferTo=membershipLog.getNodeInfo(getSuccessor(membershipView.getNodeHash()));
-        for (String fileKey : fileKeys) {
+        for (String fileKey : ownedKeys) {
             String fileContent=getFromFile(fileKey);
             unicastService.sendUnicastMessage(transferTo.getStoragePort(), transferTo.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent));
+        }
+        for (String fileToRemove : ownedKeys) {
+            
+            File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() + "/" + fileToRemove);
+            f.delete();
+            ownedKeys.remove(fileToRemove);
         }
     }
 
@@ -134,7 +178,7 @@ public class StorageService extends Thread{
 
     private String getFromFile(String fileKey) {
         String nodeHash = membershipView.getNodeHash();
-        File f = new File("./storage" + nodeHash + "/" + fileKey);
+        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + nodeHash + "/" + fileKey);
         String value = null;
         try {
             if (!f.createNewFile()) {
@@ -154,36 +198,46 @@ public class StorageService extends Thread{
     @Override
     public void run() {
         unicastService.startUnicastReceiver(membershipView.getStoragePort());
-
+        nodeHashes.add(membershipView.getNodeHash());
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
-                StorageMessage message = unicastService.getLastObjectReceived();
 
+                StorageMessage message = unicastService.getLastObjectReceived();
                 MembershipView nodeInfo= getResponsibleNodeInfo(message);
 
-                if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
-                    switch (message.type){
-                        case PUT:
-                            saveToFile(nodeInfo, message);
-                            //replicate(nodeInfo, message);
-                            break;
-                        case GET:
-                            // getFromFile();
-                            break;
-                        case DELETE:
-                            // deleteFile();
-                            // replicate();
-                            break;
-                        default:
-                            break;
-                    }
-                    
+                switch (message.type){
+                    case PUT:
+                        if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
+                            saveToFile(message);
+                            if(membershipLog.getActiveNodeCount()>3){
+                                //replicate(nodeInfo, message);
+                            }
+                        }
+                        else{
+                            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+                        }
+                        break;
+                    case PUT_REPLICATE:
+                        saveToFile(message);
+                        break;
+                    case GET:
+                        String fKey=Utils.generateHash(message.valueToStore);
+                        if(ownedKeys.contains(fKey)){
+                            String fileContents = getFromFile(fKey);
+                            // send file contents back to caller
+                        }
+                        break;
+                    case DELETE:
+                        // deleteFile();
+                        // replicate();
+                        break;
+                    default:
+                        break;
                 }
-                else{
-                    unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
-                }
+            
             }
             if(!membershipStoragePipe.isEmpty()){
+                System.out.println("Node "+ membershipView.getNodeIP() + ": Recebeu JOIN");
                 handleJoin(membershipStoragePipe.poll());
                 /** Ao fazer join adiciona hash ao tree set e redistribui keys, se existirem. Same para o leave. */
             }

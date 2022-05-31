@@ -1,7 +1,7 @@
 package tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cpd2.main.service.MulticastService;
+import com.cpd2.main.service.communication.MulticastService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,7 +105,7 @@ public class MulticastServiceTests {
 
         multicastService.updatePeriodicMessage(newMessage);
 
-        Thread.sleep(1500);
+        Thread.sleep(2000);
 
         multicastService.stopPeriodicMulticastSender();
 
