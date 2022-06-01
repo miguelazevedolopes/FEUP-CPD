@@ -14,12 +14,12 @@ import java.util.LinkedList;
 public class MulticastServiceReceive<T extends Serializable> extends Thread{
     private DatagramSocket receiver=null;
     private InetSocketAddress group;
-    private boolean stop = false;
+    private boolean stop = false; 
     private LinkedList<T> messagesReceived=new LinkedList<>();
 
     public MulticastServiceReceive(String multicastAddress, int multicastPort){
         try {
-
+            
             // Setting up multicast receive
             receiver = new DatagramSocket(null); // unbound
             receiver.setReuseAddress(true); // set reuse address before binding

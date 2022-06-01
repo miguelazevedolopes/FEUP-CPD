@@ -7,10 +7,11 @@ import com.cpd2.main.service.messages.enums.StorageMessageType;
 public class StorageMessage implements Serializable {
 
     public StorageMessageType type;
-    public String valueToStore;
+    public String contents;
 
-    public StorageMessage(StorageMessageType type,String valueToStore) {
+    public StorageMessage(StorageMessageType type,String contents) {
         this.type = type;
-        this.valueToStore=valueToStore;
+        this.contents=contents;
     }
+
 }

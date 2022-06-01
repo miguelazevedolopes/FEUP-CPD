@@ -37,9 +37,6 @@ public class MembershipService extends Thread{
         unicastService = new UnicastService<MembershipMessage>();
     }
 
-
-
-
     public synchronized void stopService() {
         this.stop = true;
     }
@@ -102,7 +99,11 @@ public class MembershipService extends Thread{
                 handleMembershipMessage(unicastService.getLastObjectReceived());
             }
         }
+
+        unicastService.stopUnicastReceiver();
+
         multicastService.startMulticastReceiver();
+
         System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Receiving on multicast");
         if(membershipLog.isUpToDate()||membershipLog.getActiveNodeCount()<3){
             multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC), 1000);
@@ -131,8 +132,6 @@ public class MembershipService extends Thread{
                 e.printStackTrace();
             }
         }
-
-        unicastService.stopUnicastReceiver();
 
         multicastService.stopMulticastReceiver();
 

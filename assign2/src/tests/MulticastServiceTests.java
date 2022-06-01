@@ -12,7 +12,7 @@ public class MulticastServiceTests {
 
     @BeforeEach
     void setUp(){
-        multicastService=new MulticastService<String>("225.0.0.1",7373);
+        multicastService=new MulticastService<String>("224.0.0.1",7373);
     }
 
     @Test

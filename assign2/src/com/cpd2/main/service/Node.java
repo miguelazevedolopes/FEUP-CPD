@@ -1,5 +1,7 @@
 package com.cpd2.main.service;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,15 +10,19 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 import com.cpd2.main.service.messages.PipeMessage;
+import com.cpd2.main.service.messages.StorageMessage;
+import com.cpd2.main.service.messages.enums.StorageMessageType;
+import com.cpd2.main.service.rmi.KeyValueStore;
 
 
-public class Node {
+public class Node extends UnicastRemoteObject implements KeyValueStore{
+
 
     MembershipService membershipService;
     StorageService storageService;
 
-    public Node(String multicastAddressString, int multicastPort, String nodeIpAddress, int nodePort){
-
+    public Node(String multicastAddressString, int multicastPort, String nodeIpAddress, int nodePort) throws RemoteException{
+        super();
         MembershipView membershipView = new MembershipView(nodeIpAddress, 0, nodePort);
         MembershipLog membershipLog = new MembershipLog(membershipView);
         LinkedList<PipeMessage> membershipStoragePipe = new LinkedList<>();
@@ -25,8 +31,7 @@ public class Node {
 
         this.membershipService=new MembershipService(multicastAddressString, multicastPort,membershipView,membershipLog,nodeHashes,membershipStoragePipe);
         this.storageService= new StorageService(membershipLog, membershipView, nodeHashes,membershipStoragePipe);
-        join();
-     
+
     }
 
     public MembershipLog getMembershipLog(){
@@ -37,16 +42,32 @@ public class Node {
         return membershipService.getMembershipView();
     }
 
-
+    @Override
     public void join() {
         storageService.start();
         membershipService.start();
     }
 
+    @Override
     public void leave() {
-
-        membershipService.stopService();
         storageService.stopService();
+        membershipService.stopService();
+    }
+
+    @Override
+    public void put(String file) throws RemoteException {
+        storageService.put(new StorageMessage(StorageMessageType.PUT, file));
+    }
+
+    @Override
+    public void delete(String fileKey) throws RemoteException {
+        storageService.delete(new StorageMessage(StorageMessageType.DELETE, fileKey));
+        
+    }
+
+    @Override
+    public String get(String fileKey) throws RemoteException {
+        return storageService.get(new StorageMessage(StorageMessageType.GET, fileKey));
     }
 
 

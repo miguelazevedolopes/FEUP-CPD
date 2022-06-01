@@ -1,7 +1,11 @@
 package com.cpd2.main.service;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.channels.Pipe;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +16,7 @@ import com.cpd2.main.service.messages.PipeMessage;
 import com.cpd2.main.service.messages.StorageMessage;
 import com.cpd2.main.service.messages.enums.PipeMessageType;
 import com.cpd2.main.service.messages.enums.StorageMessageType;
+import com.cpd2.main.service.rmi.KeyValueStore;
 
 public class StorageService extends Thread{
 
@@ -47,7 +52,7 @@ public class StorageService extends Thread{
     }
 
     private MembershipView getResponsibleNodeInfo(StorageMessage message) {
-        String messageHash=Utils.generateHash(message.valueToStore);
+        String messageHash=Utils.generateHash(message.contents);
         synchronized(nodeHashes){
             String nodeHash=nodeHashes.higher(messageHash);
             if(nodeHash!=null){
@@ -92,7 +97,7 @@ public class StorageService extends Thread{
 
     private void saveToFile(StorageMessage message) {
         System.out.println("Node "+ membershipView.getNodeIP() + ": Saved the file to persistent memory");
-        String fileHash = Utils.generateHash(message.valueToStore);
+        String fileHash = Utils.generateHash(message.contents);
         File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() +"/" + fileHash);
         try{
             System.out.println(f.getAbsolutePath());
@@ -100,7 +105,7 @@ public class StorageService extends Thread{
 
             FileOutputStream fStream = new FileOutputStream(f);
             ObjectOutputStream o = new ObjectOutputStream(fStream);
-            o.writeObject(message.valueToStore);
+            o.writeObject(message.contents);
             o.close();
             fStream.close();
             
@@ -138,43 +143,14 @@ public class StorageService extends Thread{
             String fileContent=getFromFile(fileKey);
             unicastService.sendUnicastMessage(transferTo.getStoragePort(), transferTo.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent));
         }
-        for (String fileToRemove : ownedKeys) {
-            
-            File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() + "/" + fileToRemove);
-            f.delete();
-            ownedKeys.remove(fileToRemove);
+        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash());
+        for(String s: f.list()){
+            File currentFile = new File(f.getPath(),s);
+            currentFile.delete();
         }
+        f.delete();
     }
 
-    private void replicate(MembershipView nodeInfo, StorageMessage message) {
-        // String messageHash = Utils.generateHash(message.valueToStore);
-        // String successor1 = getSuccessor(nodeInfo.getNodeHash());
-        // if (successor1 == null) {
-        //     return;
-        // }
-        // List<String> successors = new ArrayList<>();
-        // successors.add(successor1);
-        // String successor2 = getSuccessor(successor1);
-        // if (!(successor2 == null) && !(successor2.equals(nodeInfo.getNodeHash()))) {
-        //     successors.add(successor2);
-        // }
-        // for (String successor : successors) {
-        //     File f = new File("./storage" + successor + "/" + messageHash);
-        //     try{
-
-        //         f.createNewFile();
-
-        //         FileOutputStream fStream = new FileOutputStream(f);
-        //         ObjectOutputStream o = new ObjectOutputStream(fStream);
-        //         o.writeObject(message.valueToStore);
-        //         o.close();
-        //         fStream.close();
-
-        //     } catch (Exception e) {
-        //         e.printStackTrace();
-        //     }
-        // }
-    }
 
     private String getFromFile(String fileKey) {
         String nodeHash = membershipView.getNodeHash();
@@ -194,6 +170,105 @@ public class StorageService extends Thread{
         return value;
     }
 
+    private void deleteFile(String fileKey){
+        String nodeHash = membershipView.getNodeHash();
+        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + nodeHash + "/" + fileKey);
+        f.delete();
+        ownedKeys.remove(fileKey);
+    }
+
+    public void put(StorageMessage message){
+        
+        MembershipView nodeInfo= getResponsibleNodeInfo(message);
+        if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
+            saveToFile(message);
+        }
+        else{
+            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+        }
+    }
+
+    public void delete(StorageMessage message){
+        MembershipView nodeInfo= getResponsibleNodeInfo(message);
+        if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
+            if(ownedKeys.contains(message.contents)){
+                deleteFile(message.contents);
+            }
+        }
+        else{
+            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+        }
+        // replicate();
+    }
+
+    public String get(StorageMessage message){
+        MembershipView nodeInfo= getResponsibleNodeInfo(message);
+        if(ownedKeys.contains(message.contents)){ // If it has the file, it returns it
+            return getFromFile(message.contents);
+        }
+        else if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){ // It's the responsible node, but for some reason it doesn't have the file
+
+            String file=null;
+            //Try first replica
+            nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
+            try {
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                file = responsibleNode.get(message.contents);
+                return file;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            //Try second replica
+            nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
+            try {
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                file = responsibleNode.get(message.contents);
+                return file;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else{ // It's not the responsible node, so it invokes the remote method in the responsible node, and then the replicas, if necessary
+
+            String file=null;
+            // Try responsible
+            try {
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                file = responsibleNode.get(message.contents);
+                return file;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            //Try first replica
+            nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
+            try {
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                file = responsibleNode.get(message.contents);
+                return file;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            //Try second replica
+            nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
+            try {
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                file = responsibleNode.get(message.contents);
+                return file;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public void run() {
@@ -203,33 +278,15 @@ public class StorageService extends Thread{
             if(unicastService.getNumberOfObjectsReceived()>0){
 
                 StorageMessage message = unicastService.getLastObjectReceived();
-                MembershipView nodeInfo= getResponsibleNodeInfo(message);
-
                 switch (message.type){
                     case PUT:
-                        if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
-                            saveToFile(message);
-                            if(membershipLog.getActiveNodeCount()>3){
-                                //replicate(nodeInfo, message);
-                            }
-                        }
-                        else{
-                            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
-                        }
+                        put(message);
                         break;
                     case PUT_REPLICATE:
                         saveToFile(message);
                         break;
-                    case GET:
-                        String fKey=Utils.generateHash(message.valueToStore);
-                        if(ownedKeys.contains(fKey)){
-                            String fileContents = getFromFile(fKey);
-                            // send file contents back to caller
-                        }
-                        break;
                     case DELETE:
-                        // deleteFile();
-                        // replicate();
+                        delete(message);
                         break;
                     default:
                         break;
@@ -239,7 +296,6 @@ public class StorageService extends Thread{
             if(!membershipStoragePipe.isEmpty()){
                 System.out.println("Node "+ membershipView.getNodeIP() + ": Recebeu JOIN");
                 handleJoin(membershipStoragePipe.poll());
-                /** Ao fazer join adiciona hash ao tree set e redistribui keys, se existirem. Same para o leave. */
             }
 
             try {
@@ -250,7 +306,7 @@ public class StorageService extends Thread{
             }
 
         }
-
+        unicastService.stopUnicastReceiver();
         leaveTransfer();
     }
     
