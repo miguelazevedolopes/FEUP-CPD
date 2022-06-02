@@ -7,6 +7,11 @@ public class UnicastService<T extends Serializable> {
     UnicastServiceReceive<T> receiver = null;
     UnicastServiceSend sender =null;
 
+    public UnicastService(){
+        receiver = null;
+        sender =null;
+    }
+
     public void startUnicastReceiver(int port){
         receiver= new UnicastServiceReceive<T>(port);
         receiver.start();

@@ -4,5 +4,6 @@ public enum StorageMessageType {
     GET,
     PUT,
     PUT_REPLICATE,
-    DELETE
+    DELETE,
+    DELETE_REPLICATE
 }

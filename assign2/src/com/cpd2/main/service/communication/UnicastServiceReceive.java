@@ -49,8 +49,10 @@ public class UnicastServiceReceive<T extends Serializable> extends Thread {
                 ObjectInputStream receiver = new ObjectInputStream(input);
                 objectsReceived.add((T) receiver.readObject());
             }
+            serverSocket.close();
             socket.close();
             input.close();
+            objectsReceived.clear();
         } catch (Exception ex) {
             System.out.println("TCP Server exception: " + ex.getMessage());
             ex.printStackTrace();

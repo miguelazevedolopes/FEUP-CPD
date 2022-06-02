@@ -173,27 +173,64 @@ public class StorageService extends Thread{
     private void deleteFile(String fileKey){
         String nodeHash = membershipView.getNodeHash();
         File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + nodeHash + "/" + fileKey);
-        f.delete();
-        ownedKeys.remove(fileKey);
+        if(f.exists()){
+            f.delete();
+        }
+        if(ownedKeys.contains(fileKey)){
+            ownedKeys.remove(fileKey);
+        }
     }
 
-    public void put(StorageMessage message){
+    public synchronized void put(StorageMessage message){
         
         MembershipView nodeInfo= getResponsibleNodeInfo(message);
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             saveToFile(message);
+ 
+            if(nodeHashes.size()>3){
+                String successorOneHash = getSuccessor(membershipView.getNodeHash());
+                String successorTwoHash = getSuccessor(successorOneHash);
+    
+                MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
+                MembershipView succesorTwoInfo= membershipLog.getNodeInfo(successorTwoHash);
+
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
+            }
+            else if(nodeHashes.size()==2){
+                String successorOneHash = getSuccessor(membershipView.getNodeHash());
+                MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
+            }
+            
         }
         else{
             unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
         }
     }
 
-    public void delete(StorageMessage message){
+    public synchronized void delete(StorageMessage message){
         MembershipView nodeInfo= getResponsibleNodeInfo(message);
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             if(ownedKeys.contains(message.contents)){
                 deleteFile(message.contents);
             }
+            if(nodeHashes.size()>3){
+                String successorOneHash = getSuccessor(membershipView.getNodeHash());
+                String successorTwoHash = getSuccessor(successorOneHash);
+    
+                MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
+                MembershipView succesorTwoInfo= membershipLog.getNodeInfo(successorTwoHash);
+
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
+            }
+            else if(nodeHashes.size()==2){
+                String successorOneHash = getSuccessor(membershipView.getNodeHash());
+                MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
+            }
+
         }
         else{
             unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
@@ -201,7 +238,7 @@ public class StorageService extends Thread{
         // replicate();
     }
 
-    public String get(StorageMessage message){
+    public synchronized String get(StorageMessage message){
         MembershipView nodeInfo= getResponsibleNodeInfo(message);
         if(ownedKeys.contains(message.contents)){ // If it has the file, it returns it
             return getFromFile(message.contents);
