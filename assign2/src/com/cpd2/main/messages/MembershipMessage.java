@@ -1,7 +1,7 @@
-package com.cpd2.main.service.messages;
+package com.cpd2.main.messages;
+import com.cpd2.main.messages.enums.MembershipMessageType;
 import com.cpd2.main.service.MembershipLog;
 import com.cpd2.main.service.MembershipView;
-import com.cpd2.main.service.messages.enums.MembershipMessageType;
 
 public class MembershipMessage {
     public MembershipView mView;

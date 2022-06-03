@@ -13,11 +13,11 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
+import com.cpd2.main.communication.UnicastService;
+import com.cpd2.main.messages.StorageMessage;
+import com.cpd2.main.messages.enums.StorageMessageType;
 import com.cpd2.main.service.Node;
 import com.cpd2.main.service.Utils;
-import com.cpd2.main.service.communication.UnicastService;
-import com.cpd2.main.service.messages.StorageMessage;
-import com.cpd2.main.service.messages.enums.StorageMessageType;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ public class StorageServiceTests {
 
         unicastService.sendUnicastMessage(7001, "127.0.0.1", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste").toString());
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         Thread.sleep(2000);
 
@@ -52,7 +52,7 @@ public class StorageServiceTests {
 
         nodeOne.put("Teste teste isto é um teste");
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         Thread.sleep(1000);
 
@@ -70,7 +70,7 @@ public class StorageServiceTests {
 
         unicastService.sendUnicastMessage(7005, "127.0.0.2", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste").toString());
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.1",7007);
         nodeTwo.join();
@@ -78,7 +78,7 @@ public class StorageServiceTests {
 
         assertFalse(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
         
         Thread.sleep(1000);
 
@@ -104,11 +104,11 @@ public class StorageServiceTests {
 
         Thread.sleep(1000);
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertTrue(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
         
         assertTrue(file.exists());
 
@@ -131,7 +131,7 @@ public class StorageServiceTests {
 
         Thread.sleep(1000);
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertTrue(file.exists());
         
@@ -154,7 +154,7 @@ public class StorageServiceTests {
 
         Thread.sleep(1000);
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertTrue(file.exists());
         
@@ -184,7 +184,7 @@ public class StorageServiceTests {
 
         Thread.sleep(2000);
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertFalse(file.exists());
 
@@ -263,17 +263,17 @@ public class StorageServiceTests {
 
         nodeOne.put("Teste teste isto é um teste");
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         Thread.sleep(1000);
 
         assertTrue(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertTrue(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.3") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.3") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertTrue(file.exists());
 
@@ -309,15 +309,15 @@ public class StorageServiceTests {
 
         Thread.sleep(2000);
 
-        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        File file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertFalse(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertFalse(file.exists());
 
-        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.3") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+        file = new File(Utils.getRelativePath() + Utils.generateHash("127.0.0.3") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
         assertFalse(file.exists());
 

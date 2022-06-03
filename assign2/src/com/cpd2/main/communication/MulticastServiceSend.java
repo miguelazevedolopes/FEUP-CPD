@@ -1,4 +1,4 @@
-package com.cpd2.main.service.communication;
+package com.cpd2.main.communication;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

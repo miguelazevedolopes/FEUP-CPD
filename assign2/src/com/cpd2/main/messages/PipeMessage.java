@@ -1,7 +1,7 @@
-package com.cpd2.main.service.messages;
+package com.cpd2.main.messages;
 
+import com.cpd2.main.messages.enums.PipeMessageType;
 import com.cpd2.main.service.MembershipView;
-import com.cpd2.main.service.messages.enums.PipeMessageType;
 
 public class PipeMessage {
     public MembershipView mView;

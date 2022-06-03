@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.cpd2.main.service.messages.MembershipMessage;
+import com.cpd2.main.messages.MembershipMessage;
 
 public class Utils {
     /**
@@ -45,12 +45,12 @@ public class Utils {
     public static void saveMembershipInfo(MembershipMessage membershipMessage){
 
         // Creates directory in case it doesn't exist 
-        var temp=new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipMessage.mView.getNodeHash());
+        var temp=new File(Utils.getRelativePath()+membershipMessage.mView.getNodeHash());
         temp.mkdirs();
-        System.out.println(temp.getAbsolutePath());
+        //System.out.println(temp.getAbsolutePath());
         
         // Creates and saves the membership info to a file
-        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipMessage.mView.getNodeHash()+"/"+"membership.txt");
+        File f= new File(Utils.getRelativePath()+membershipMessage.mView.getNodeHash()+"/"+"membership.txt");
         try{
             if(f.exists()) f.delete();
             f.createNewFile();
@@ -63,5 +63,9 @@ public class Utils {
             e.printStackTrace();
         }
         
+    }
+
+    public static final String getRelativePath(){
+        return new File("").getAbsolutePath()+"/storage/";
     }
 }

@@ -1,4 +1,4 @@
-package com.cpd2.main.service.communication;
+package com.cpd2.main.communication;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 public class MulticastService{   

@@ -11,12 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import com.cpd2.main.service.communication.UnicastService;
-import com.cpd2.main.service.messages.PipeMessage;
-import com.cpd2.main.service.messages.StorageMessage;
-import com.cpd2.main.service.messages.enums.PipeMessageType;
-import com.cpd2.main.service.messages.enums.StorageMessageType;
-import com.cpd2.main.service.rmi.KeyValueStore;
+import com.cpd2.main.communication.UnicastService;
+import com.cpd2.main.messages.PipeMessage;
+import com.cpd2.main.messages.StorageMessage;
+import com.cpd2.main.messages.enums.PipeMessageType;
+import com.cpd2.main.messages.enums.StorageMessageType;
+import com.cpd2.main.rmi.KeyValueStore;
 
 public class StorageService extends Thread{
 
@@ -67,7 +67,7 @@ public class StorageService extends Thread{
     private void saveOwnedKeyList(){
         
         // Creates and saves the membership info to a file
-        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipView.getNodeHash()+"/"+"keys.txt");
+        File f= new File(Utils.getRelativePath()+membershipView.getNodeHash()+"/"+"keys.txt");
 
         if(f.exists()) f.delete();
 
@@ -95,9 +95,9 @@ public class StorageService extends Thread{
     private void saveToFile(StorageMessage message) {
         System.out.println("Node "+ membershipView.getNodeIP() + ": Saved the file to persistent memory");
         String fileHash = Utils.generateHash(message.contents);
-        File dir = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash());
+        File dir = new File(Utils.getRelativePath() + membershipView.getNodeHash());
         if(!dir.exists()) dir.mkdir();
-        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() +"/" + fileHash);
+        File f = new File(Utils.getRelativePath() + membershipView.getNodeHash() +"/" + fileHash);
         try{
             System.out.println(f.getAbsolutePath());
             f.createNewFile();
@@ -128,7 +128,7 @@ public class StorageService extends Thread{
                     }
                 }
                 for (String fileToRemove : toRemove) {
-                    File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() + "/" + fileToRemove);
+                    File f = new File(Utils.getRelativePath() + membershipView.getNodeHash() + "/" + fileToRemove);
                     f.delete();
                     ownedKeys.remove(fileToRemove);
                 }
@@ -142,18 +142,18 @@ public class StorageService extends Thread{
             String fileContent=getFromFile(fileKey);
             unicastService.sendUnicastMessage(transferTo.getStoragePort(), transferTo.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent).toString());
         }
-        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash());
+        File f = new File(Utils.getRelativePath() + membershipView.getNodeHash());
         for(String s: f.list()){
+            if(s.equals("membership.txt")) continue;
             File currentFile = new File(f.getPath(),s);
             currentFile.delete();
         }
-        f.delete();
     }
 
 
     private String getFromFile(String fileKey) {
         String nodeHash = membershipView.getNodeHash();
-        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + nodeHash + "/" + fileKey);
+        File f = new File(Utils.getRelativePath() + nodeHash + "/" + fileKey);
         String value = null;
         try {
             if (!f.createNewFile()) {
@@ -171,7 +171,7 @@ public class StorageService extends Thread{
 
     private void deleteFile(String fileKey){
         String nodeHash = membershipView.getNodeHash();
-        File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + nodeHash + "/" + fileKey);
+        File f = new File(Utils.getRelativePath() + nodeHash + "/" + fileKey);
         if(f.exists()){
             f.delete();
         }

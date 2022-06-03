@@ -5,10 +5,10 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-import com.cpd2.main.service.messages.PipeMessage;
-import com.cpd2.main.service.messages.StorageMessage;
-import com.cpd2.main.service.messages.enums.StorageMessageType;
-import com.cpd2.main.service.rmi.KeyValueStore;
+import com.cpd2.main.messages.PipeMessage;
+import com.cpd2.main.messages.StorageMessage;
+import com.cpd2.main.messages.enums.StorageMessageType;
+import com.cpd2.main.rmi.KeyValueStore;
 
 
 public class Node extends UnicastRemoteObject implements KeyValueStore{

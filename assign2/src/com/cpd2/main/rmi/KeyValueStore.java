@@ -1,4 +1,4 @@
-package com.cpd2.main.service.rmi;
+package com.cpd2.main.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

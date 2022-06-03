@@ -6,10 +6,10 @@ import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 
+import com.cpd2.main.messages.MembershipMessage;
 import com.cpd2.main.service.MembershipLog;
 import com.cpd2.main.service.MembershipView;
 import com.cpd2.main.service.Utils;
-import com.cpd2.main.service.messages.MembershipMessage;
 
 public class MessageTests {
 

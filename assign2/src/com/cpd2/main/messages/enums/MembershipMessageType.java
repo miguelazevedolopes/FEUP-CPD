@@ -1,4 +1,4 @@
-package com.cpd2.main.service.messages.enums;
+package com.cpd2.main.messages.enums;
 
 public enum MembershipMessageType{
     JOIN,

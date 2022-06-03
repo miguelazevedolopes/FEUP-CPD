@@ -3,12 +3,12 @@ package com.cpd2.main.service;
 import java.util.Queue;
 import java.util.TreeSet;
 
-import com.cpd2.main.service.communication.MulticastService;
-import com.cpd2.main.service.communication.UnicastService;
-import com.cpd2.main.service.messages.MembershipMessage;
-import com.cpd2.main.service.messages.PipeMessage;
-import com.cpd2.main.service.messages.enums.MembershipMessageType;
-import com.cpd2.main.service.messages.enums.PipeMessageType;
+import com.cpd2.main.communication.MulticastService;
+import com.cpd2.main.communication.UnicastService;
+import com.cpd2.main.messages.MembershipMessage;
+import com.cpd2.main.messages.PipeMessage;
+import com.cpd2.main.messages.enums.MembershipMessageType;
+import com.cpd2.main.messages.enums.PipeMessageType;
 
 public class MembershipService extends Thread{
 
@@ -68,6 +68,9 @@ public class MembershipService extends Thread{
             membershipStoragePipe.add(new PipeMessage(PipeMessageType.JOIN,msg.mView));
         }
         membershipLog.checkUpdated(msg.mLog,nodeHashes);
+        if(membershipLog.isUpToDate()){
+            Utils.saveMembershipInfo(new MembershipMessage(membershipView, membershipLog, MembershipMessageType.PERIODIC));
+        }
     }
 
     @Override
@@ -108,13 +111,12 @@ public class MembershipService extends Thread{
         
         while(keepRunning()){
             while(multicastService.getReceiverMessageSize()!=0){
-                System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Received multicast msg");
+                //System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Received multicast msg");
                 MembershipMessage msg = new MembershipMessage(multicastService.getLastMulticastReceiverMessage());
                 handleMembershipMessage(msg);
-                if(membershipLog.isUpToDate()){
-                    Utils.saveMembershipInfo(new MembershipMessage(membershipView, membershipLog, MembershipMessageType.PERIODIC));
+                if(!membershipLog.isUpToDate()){
+                    multicastService.pausePeriodicMulticastSender();                
                 }
-                else multicastService.pausePeriodicMulticastSender();
                 
                 if(multicastService.serviceIsPaused()){
                     if(membershipLog.isUpToDate()){

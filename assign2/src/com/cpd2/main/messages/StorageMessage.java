@@ -1,6 +1,6 @@
-package com.cpd2.main.service.messages;
+package com.cpd2.main.messages;
 
-import com.cpd2.main.service.messages.enums.StorageMessageType;
+import com.cpd2.main.messages.enums.StorageMessageType;
 
 public class StorageMessage {
 

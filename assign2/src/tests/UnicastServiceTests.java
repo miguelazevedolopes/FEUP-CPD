@@ -3,10 +3,10 @@ package tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.cpd2.main.service.communication.UnicastService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.cpd2.main.communication.UnicastService;
 
 
 public class UnicastServiceTests {
