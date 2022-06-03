@@ -26,13 +26,12 @@ public class RemoteMethodInvocationTests {
     RemoteMethodInvocationTests() throws RemoteException, UnknownHostException, MalformedURLException{
 
         KeyValueStore nodeServer = new Node("225.0.0.1",7373,"127.0.0.1",7023);
-        LocateRegistry.createRegistry(1900);
-        Naming.rebind("rmi://127.0.0.1:1900/"+Utils.generateHash("127.0.0.1"),nodeServer);
+        Naming.rebind("rmi://127.0.0.1/"+Utils.generateHash("127.0.0.1"),nodeServer);
     }
     
     @Test
     public void testJoinAndLeave() throws MalformedURLException, RemoteException, NotBoundException, InterruptedException{
-        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1:1900/"+Utils.generateHash("127.0.0.1"));
+        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1/"+Utils.generateHash("127.0.0.1"));
         client.join();
         Thread.sleep(10000);
         File f= new File(Utils.getRelativePath()+Utils.generateHash("127.0.0.1"));
@@ -42,7 +41,7 @@ public class RemoteMethodInvocationTests {
 
     @Test
     public void testPut() throws MalformedURLException, RemoteException, NotBoundException, InterruptedException{
-        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1:1900/"+Utils.generateHash("127.0.0.1"));
+        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1/"+Utils.generateHash("127.0.0.1"));
         client.join();
         Thread.sleep(10000);
 
@@ -59,7 +58,7 @@ public class RemoteMethodInvocationTests {
 
     @Test
     public void testGet() throws MalformedURLException, RemoteException, NotBoundException, InterruptedException{
-        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1:1900/"+Utils.generateHash("127.0.0.1"));
+        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1/"+Utils.generateHash("127.0.0.1"));
         client.join();
         Thread.sleep(10000);
 
@@ -76,7 +75,7 @@ public class RemoteMethodInvocationTests {
 
     @Test
     public void testDelete() throws MalformedURLException, RemoteException, NotBoundException, InterruptedException{
-        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1:1900/"+Utils.generateHash("127.0.0.1"));
+        KeyValueStore client = (KeyValueStore)Naming.lookup("rmi://127.0.0.1/"+Utils.generateHash("127.0.0.1"));
         client.join();
         Thread.sleep(10000);
 
