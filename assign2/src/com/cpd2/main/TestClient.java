@@ -114,7 +114,7 @@ public class TestClient {
 
     private static void reconstructFile(String fileContents) {
         var stringArray= fileContents.split("\\n",2);
-        File f = new File(new File("").getAbsolutePath(), stringArray[0]);
+        File f = new File(Utils.getRelativePath(), stringArray[0]);
 
         FileWriter myWriter=null;
         try {
