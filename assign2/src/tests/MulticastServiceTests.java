@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 
 public class MulticastServiceTests {
 
-    MulticastService<String> multicastService;
+    MulticastService multicastService;
 
     @BeforeEach
     void setUp(){
-        multicastService=new MulticastService<String>("224.0.0.1",7373);
+        multicastService=new MulticastService("224.0.0.1",7373);
     }
 
     @Test

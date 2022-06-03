@@ -24,7 +24,8 @@ import org.junit.jupiter.api.Test;
 
 public class StorageServiceTests {
 
-    UnicastService<StorageMessage> unicastService = new UnicastService<StorageMessage>();
+    UnicastService unicastService = new UnicastService();
+
 
     @Test
     public void testTcpPut() throws InterruptedException, RemoteException{
@@ -32,7 +33,7 @@ public class StorageServiceTests {
         nodeOne.join();
         Thread.sleep(10000);
 
-        unicastService.sendUnicastMessage(7001, "127.0.0.1", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste"));
+        unicastService.sendUnicastMessage(7001, "127.0.0.1", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste").toString());
 
         File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
@@ -53,7 +54,7 @@ public class StorageServiceTests {
 
         File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         assertTrue(file.exists());
 
@@ -67,7 +68,7 @@ public class StorageServiceTests {
         nodeOne.join();
         Thread.sleep(10000);
 
-        unicastService.sendUnicastMessage(7005, "127.0.0.2", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste"));
+        unicastService.sendUnicastMessage(7005, "127.0.0.2", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste").toString());
 
         File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
@@ -85,6 +86,8 @@ public class StorageServiceTests {
 
         nodeOne.leave();
 
+        Thread.sleep(1000);
+
         nodeTwo.leave();
     }
 
@@ -92,7 +95,6 @@ public class StorageServiceTests {
     public void testPutWrongNode() throws InterruptedException, RemoteException{
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.2",7009);
         nodeOne.join();
-        Thread.sleep(10000);
 
         Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.1",7011);
         nodeTwo.join();
@@ -112,6 +114,9 @@ public class StorageServiceTests {
 
         nodeOne.leave();
 
+        Thread.sleep(1000);
+
+
         nodeTwo.leave();
     }
 
@@ -122,7 +127,7 @@ public class StorageServiceTests {
         nodeOne.join();
         Thread.sleep(10000);
 
-        unicastService.sendUnicastMessage(7013, "127.0.0.1", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste"));
+        unicastService.sendUnicastMessage(7013, "127.0.0.1", new StorageMessage(StorageMessageType.PUT, "Teste teste isto é um teste").toString());
 
         Thread.sleep(1000);
 
@@ -130,7 +135,7 @@ public class StorageServiceTests {
 
         assertTrue(file.exists());
         
-        unicastService.sendUnicastMessage(7013, "127.0.0.1", new StorageMessage(StorageMessageType.DELETE, Utils.generateHash("Teste teste isto é um teste")));
+        unicastService.sendUnicastMessage(7013, "127.0.0.1", new StorageMessage(StorageMessageType.DELETE, Utils.generateHash("Teste teste isto é um teste")).toString());
 
         Thread.sleep(1000);
 
@@ -166,7 +171,6 @@ public class StorageServiceTests {
     public void testDeleteWrongNode() throws InterruptedException, RemoteException{
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.2",7017);
         nodeOne.join();
-        Thread.sleep(10000);
 
         Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.1",7019);
         nodeTwo.join();
@@ -185,6 +189,8 @@ public class StorageServiceTests {
         assertFalse(file.exists());
 
         nodeOne.leave();
+
+        Thread.sleep(1000);
 
         nodeTwo.leave();
 
@@ -217,7 +223,6 @@ public class StorageServiceTests {
         Naming.rebind("rmi://127.0.0.1:1900/"+nodeOne.getMembershipView().getNodeHash(),nodeOne);
 
         nodeOne.join();
-        Thread.sleep(10000);
 
         Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.2",7025);
 
@@ -238,6 +243,8 @@ public class StorageServiceTests {
 
         nodeOne.leave();
 
+        Thread.sleep(1000);
+
         nodeTwo.leave();
     }
 
@@ -252,13 +259,13 @@ public class StorageServiceTests {
         Node nodeThree = new Node("225.0.0.1",7373,"127.0.0.3",7029);
         nodeThree.join();
 
-        Thread.sleep(15000);
+        Thread.sleep(10000);
 
         nodeOne.put("Teste teste isto é um teste");
 
         File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         assertTrue(file.exists());
 
@@ -271,7 +278,57 @@ public class StorageServiceTests {
         assertTrue(file.exists());
 
         nodeOne.leave();
+
+        Thread.sleep(1000);
+
         nodeTwo.leave();
+
+        Thread.sleep(1000);
+
+        nodeThree.leave();
+    }
+
+    @Test
+    public void testDeleteReplicate() throws InterruptedException, RemoteException{
+        Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7031);
+        nodeOne.join();
+
+        Node nodeTwo = new Node("225.0.0.1",7373,"127.0.0.2",7033);
+        nodeTwo.join();
+
+        Node nodeThree = new Node("225.0.0.1",7373,"127.0.0.3",7035);
+        nodeThree.join();
+
+        Thread.sleep(10000);
+
+        nodeOne.put("Teste teste isto é um teste");
+
+        Thread.sleep(1000);
+
+        nodeOne.delete(Utils.generateHash("Teste teste isto é um teste"));
+
+        Thread.sleep(2000);
+
+        File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+
+        assertFalse(file.exists());
+
+        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+
+        assertFalse(file.exists());
+
+        file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.3") + "/" + Utils.generateHash("Teste teste isto é um teste"));
+
+        assertFalse(file.exists());
+
+        nodeOne.leave();
+        
+        Thread.sleep(1000);
+
+        nodeTwo.leave();
+
+        Thread.sleep(1000);
+
         nodeThree.leave();
     }
 }

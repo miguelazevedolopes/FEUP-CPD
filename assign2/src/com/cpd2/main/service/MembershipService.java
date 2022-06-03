@@ -12,8 +12,8 @@ import com.cpd2.main.service.messages.enums.PipeMessageType;
 
 public class MembershipService extends Thread{
 
-    private MulticastService<MembershipMessage> multicastService;
-    private UnicastService<MembershipMessage> unicastService;
+    private MulticastService multicastService;
+    private UnicastService unicastService;
     private MembershipView membershipView;
     private MembershipLog membershipLog;
     private TreeSet<String> nodeHashes;
@@ -22,7 +22,7 @@ public class MembershipService extends Thread{
 
     public MembershipService(String multicastAddressString, int multicastPort, MembershipView membershipView, MembershipLog membershipLog, TreeSet<String> nodeHashes, Queue<PipeMessage> membershipStoragePipe){
         // Setting up multicast communication
-        multicastService=new MulticastService<MembershipMessage>(multicastAddressString,multicastPort);
+        multicastService=new MulticastService(multicastAddressString,multicastPort);
         
         this.membershipView = membershipView;
 
@@ -34,7 +34,7 @@ public class MembershipService extends Thread{
 
         this.nodeHashes=nodeHashes;
         // Setting up unicast communication
-        unicastService = new UnicastService<MembershipMessage>();
+        unicastService = new UnicastService();
     }
 
     public synchronized void stopService() {
@@ -61,7 +61,7 @@ public class MembershipService extends Thread{
             try {
                 //System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Sleeping "+randomTime+"ms");
                 Thread.sleep(randomTime);
-                unicastService.sendUnicastMessage(msg.mView.getMembershipPort(), msg.mView.getNodeIP(), new MembershipMessage(membershipView, membershipLog,MembershipMessageType.JOIN_RESPONSE));
+                unicastService.sendUnicastMessage(msg.mView.getMembershipPort(), msg.mView.getNodeIP(), new MembershipMessage(membershipView, membershipLog,MembershipMessageType.JOIN_RESPONSE).toString());
                 System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Sent unicast response");
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
@@ -84,7 +84,7 @@ public class MembershipService extends Thread{
         // Sends join message (includes MembershipView and MembershipLog)
         while(unicastService.getNumberOfObjectsReceived()!=3&&tries!=3){
             try {
-                multicastService.sendMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.JOIN));
+                multicastService.sendMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.JOIN).toString());
                 System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Try " + tries);
                 Thread.sleep(2000);
                 tries++;
@@ -95,8 +95,7 @@ public class MembershipService extends Thread{
         System.out.println("Node "+ membershipView.getNodeIP() + ": Out of the loop");
         if(unicastService.getNumberOfObjectsReceived()>0){
             while(unicastService.getNumberOfObjectsReceived()!=0){
-                
-                handleMembershipMessage(unicastService.getLastObjectReceived());
+                handleMembershipMessage(new MembershipMessage(unicastService.getLastObjectReceived()));
             }
         }
 
@@ -106,13 +105,13 @@ public class MembershipService extends Thread{
 
         System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Receiving on multicast");
         if(membershipLog.isUpToDate()||membershipLog.getActiveNodeCount()<3){
-            multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC), 1000);
+            multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString(), 1000);
         }
         
         while(keepRunning()){
             while(multicastService.getReceiverMessageSize()!=0){
-                //System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Received multicast msg");
-                MembershipMessage msg = multicastService.getLastMulticastReceiverMessage();
+                System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Received multicast msg");
+                MembershipMessage msg = new MembershipMessage(multicastService.getLastMulticastReceiverMessage());
                 handleMembershipMessage(msg);
                 if(!membershipLog.isUpToDate()){
                     multicastService.pausePeriodicMulticastSender();
@@ -123,7 +122,7 @@ public class MembershipService extends Thread{
                     }
                 }
                 
-                multicastService.updatePeriodicMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC));
+                multicastService.updatePeriodicMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString());
             }
             try {
                 Thread.sleep(100);
@@ -143,7 +142,7 @@ public class MembershipService extends Thread{
 
         membershipLog.updateNodeView(membershipView,nodeHashes);
 
-        multicastService.sendMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.LEAVE));
+        multicastService.sendMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.LEAVE).toString());
 
     }
     

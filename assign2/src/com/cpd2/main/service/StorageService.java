@@ -20,7 +20,7 @@ import com.cpd2.main.service.rmi.KeyValueStore;
 
 public class StorageService extends Thread{
 
-    private UnicastService<StorageMessage> unicastService;
+    private UnicastService unicastService;
     private MembershipLog membershipLog;
     private TreeSet<String> nodeHashes;
     private MembershipView membershipView;
@@ -38,7 +38,7 @@ public class StorageService extends Thread{
         this.nodeHashes = nodeHashes;
 
         // Setting up unicast communication
-        this.unicastService = new UnicastService<StorageMessage>();
+        this.unicastService = new UnicastService();
 
         
     }
@@ -124,7 +124,7 @@ public class StorageService extends Thread{
                 for (String fileKey : ownedKeys) {
                     String fileContent=getFromFile(fileKey);
                     if(getSuccessor(fileKey).equals(msg.mView.getNodeHash())){
-                        unicastService.sendUnicastMessage(msg.mView.getStoragePort(), msg.mView.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent));
+                        unicastService.sendUnicastMessage(msg.mView.getStoragePort(), msg.mView.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent).toString());
                         toRemove.add(fileKey);
                     }
                 }
@@ -141,7 +141,7 @@ public class StorageService extends Thread{
         MembershipView transferTo=membershipLog.getNodeInfo(getSuccessor(membershipView.getNodeHash()));
         for (String fileKey : ownedKeys) {
             String fileContent=getFromFile(fileKey);
-            unicastService.sendUnicastMessage(transferTo.getStoragePort(), transferTo.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent));
+            unicastService.sendUnicastMessage(transferTo.getStoragePort(), transferTo.getNodeIP(), new StorageMessage(StorageMessageType.PUT, fileContent).toString());
         }
         File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash());
         for(String s: f.list()){
@@ -187,25 +187,25 @@ public class StorageService extends Thread{
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             saveToFile(message);
  
-            if(nodeHashes.size()>3){
+            if(nodeHashes.size()>=3){
                 String successorOneHash = getSuccessor(membershipView.getNodeHash());
                 String successorTwoHash = getSuccessor(successorOneHash);
     
                 MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
                 MembershipView succesorTwoInfo= membershipLog.getNodeInfo(successorTwoHash);
 
-                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
-                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents).toString());
+                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents).toString());
             }
             else if(nodeHashes.size()==2){
                 String successorOneHash = getSuccessor(membershipView.getNodeHash());
                 MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
-                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.PUT_REPLICATE, message.contents).toString());
             }
             
         }
         else{
-            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message.toString());
         }
     }
 
@@ -215,25 +215,25 @@ public class StorageService extends Thread{
             if(ownedKeys.contains(message.contents)){
                 deleteFile(message.contents);
             }
-            if(nodeHashes.size()>3){
+            if(nodeHashes.size()>=3){
                 String successorOneHash = getSuccessor(membershipView.getNodeHash());
                 String successorTwoHash = getSuccessor(successorOneHash);
     
                 MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
                 MembershipView succesorTwoInfo= membershipLog.getNodeInfo(successorTwoHash);
 
-                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
-                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents).toString());
+                unicastService.sendUnicastMessage(succesorTwoInfo.getStoragePort(), succesorTwoInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents).toString());
             }
             else if(nodeHashes.size()==2){
                 String successorOneHash = getSuccessor(membershipView.getNodeHash());
                 MembershipView succesorOneInfo= membershipLog.getNodeInfo(successorOneHash);
-                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents));
+                unicastService.sendUnicastMessage(succesorOneInfo.getStoragePort(), succesorOneInfo.getNodeIP(), new StorageMessage(StorageMessageType.DELETE_REPLICATE, message.contents).toString());
             }
 
         }
         else{
-            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message);
+            unicastService.sendUnicastMessage(nodeInfo.getStoragePort(), nodeInfo.getNodeIP(), message.toString());
         }
         // replicate();
     }
@@ -314,7 +314,7 @@ public class StorageService extends Thread{
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
 
-                StorageMessage message = unicastService.getLastObjectReceived();
+                StorageMessage message = new StorageMessage(unicastService.getLastObjectReceived());
                 switch (message.type){
                     case PUT:
                         put(message);
@@ -324,6 +324,9 @@ public class StorageService extends Thread{
                         break;
                     case DELETE:
                         delete(message);
+                        break;
+                    case DELETE_REPLICATE:
+                        deleteFile(message.contents);
                         break;
                     default:
                         break;

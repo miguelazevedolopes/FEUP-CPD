@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class MembershipView implements Serializable{
+public class MembershipView{
     private int membershipCount;
     private String nodeIP = new String();
     private String nodeHash = new String();;
@@ -22,21 +22,19 @@ public class MembershipView implements Serializable{
         this.membershipPort=storagePort+1;        
     }
 
-    public MembershipView(String pathToFile){
-        try {
-            FileInputStream fStream = new FileInputStream(new File(pathToFile));
-            ObjectInputStream o = new ObjectInputStream(fStream);
-            MembershipView object = (MembershipView) o.readObject();
-            this.membershipCount=object.membershipCount;
-            this.nodeIP=object.nodeIP;
-            this.nodeHash=object.nodeHash;
-            this.membershipPort=object.membershipPort;
-            o.close();
-            fStream.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public MembershipView(String str){
+        String[] components = str.split(", ");
+        this.nodeIP=components[0];
+        this.nodeHash = Utils.generateHash(this.nodeIP);
+        this.membershipCount= Integer.parseInt(components[1]);
+        this.storagePort= Integer.parseInt(components[2]);
+        this.membershipPort=storagePort+1;     
+    }
+
+    @Override
+    public String toString() {
+        String retString=nodeIP+", "+String.valueOf(membershipCount)+", "+String.valueOf(storagePort);
+        return retString;
     }
 
     public String getNodeHash() {
@@ -77,11 +75,11 @@ public class MembershipView implements Serializable{
 
             f.createNewFile();
 
-            FileOutputStream fStream = new FileOutputStream(f);
-            ObjectOutputStream o = new ObjectOutputStream(fStream);
-            o.writeObject(this);
-            o.close();
-            fStream.close();
+            // FileOutputStream fStream = new FileOutputStream(f);
+            // ObjectOutputStream o = new ObjectOutputStream(fStream);
+            // o.writeObject(this);
+            // o.close();
+            // fStream.close();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

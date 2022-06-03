@@ -1,6 +1,8 @@
 package com.cpd2.main.service.communication;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.ServerSocket;
@@ -8,21 +10,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnicastServiceReceive<T extends Serializable> extends Thread {
+public class UnicastServiceReceive extends Thread {
 
     private int port;
-    private List<T> objectsReceived=new ArrayList<T>();
+    private List<String> objectsReceived=new ArrayList<String>();
     private boolean doStop=false;
 
     public UnicastServiceReceive(int port){
         this.port=port;
     }
 
-    public List<T> getObjectReceived() {
+    public List<String> getObjectReceived() {
         return objectsReceived;
     }
 
-    public T getLastUnicastObjectReceived(){
+    public String getLastUnicastObjectReceived(){
         if(!objectsReceived.isEmpty()){
             return objectsReceived.remove(0);
         }
@@ -46,8 +48,13 @@ public class UnicastServiceReceive<T extends Serializable> extends Thread {
             while (keepRunning()) {
                 socket = serverSocket.accept();
                 input = socket.getInputStream();
-                ObjectInputStream receiver = new ObjectInputStream(input);
-                objectsReceived.add((T) receiver.readObject());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                String line="";
+                String message="";
+                while ((line = reader.readLine()) != null) {
+                    message+=line+"\n";
+                }
+                objectsReceived.add(message.substring(0, message.length()-1));
             }
             serverSocket.close();
             socket.close();

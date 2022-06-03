@@ -1,8 +1,9 @@
 package com.cpd2.main.service.communication;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -11,11 +12,11 @@ import java.net.NetworkInterface;
 import java.util.LinkedList;
 
 
-public class MulticastServiceReceive<T extends Serializable> extends Thread{
+public class MulticastServiceReceive extends Thread{
     private DatagramSocket receiver=null;
     private InetSocketAddress group;
     private boolean stop = false; 
-    private LinkedList<T> messagesReceived=new LinkedList<>();
+    private LinkedList<String> messagesReceived=new LinkedList<>();
 
     public MulticastServiceReceive(String multicastAddress, int multicastPort){
         try {
@@ -40,15 +41,18 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
      * Receives multicast message (this is probably going to change)
      */
     private void receiveMulticastMessage(){
-        byte[] msgBytes = new byte[2048]; // up to 2048 bytes
+        byte[] msgBytes = new byte[1000]; // up to 2048 bytes
         DatagramPacket packet = new DatagramPacket(msgBytes, msgBytes.length);
         try {
             receiver.receive(packet);
             ByteArrayInputStream bos = new ByteArrayInputStream(msgBytes);
-            ObjectInputStream o = new ObjectInputStream(bos);
-            T object = (T) o.readObject();
-
-            messagesReceived.add(object);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(bos));
+            String line="";
+            String message="";
+            while ((line = reader.readLine()) != null) {
+                message+=line+"\n";
+            }
+            messagesReceived.add(message.substring(0, message.length()-1).trim());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             System.out.println(e.getMessage());
@@ -68,13 +72,13 @@ public class MulticastServiceReceive<T extends Serializable> extends Thread{
         return messagesReceived.size();
     }
 
-    public T getMessage(){
+    public String getMessage(){
         if(!messagesReceived.isEmpty())
             return messagesReceived.removeFirst();
         return null;
     }
 
-    public LinkedList<T> getMessages(){
+    public LinkedList<String> getMessages(){
         return messagesReceived;
     }
 

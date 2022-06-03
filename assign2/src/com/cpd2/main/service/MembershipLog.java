@@ -5,14 +5,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-public class MembershipLog implements Serializable{
+public class MembershipLog{
     //private Map<Integer,Integer> membershipLog=new HashMap<>();
     private List<MembershipView> memLog = new ArrayList<>();
-    private boolean upToDate=false;
+    private boolean upToDate=true;
 
-    MembershipLog(MembershipView mv){
+    public MembershipLog(MembershipView mv){
         //membershipLog.put(nodeID, membershipCount);
         memLog.add(mv);
+    }
+
+    public MembershipLog(String str){
+        var components = str.lines().toList();
+        this.upToDate= Boolean.parseBoolean(components.get(0));
+        for (String string : components.subList(1, components.size())) {
+            memLog.add(new MembershipView(string));
+        }
+    }
+
+    @Override
+    public String toString() {
+        String retString="";
+        retString+=Boolean.toString(upToDate);
+        for (MembershipView mv : memLog) {
+            retString+= mv.toString()+"\n";
+        }
+        return retString.substring(0, retString.length()-1);
     }
 
     public boolean isUpToDate(){
@@ -109,14 +127,7 @@ public class MembershipLog implements Serializable{
         return null;
     }
 
-    @Override
-    public String toString() {
-        String retString="";
-        for (MembershipView mv : memLog) {
-            retString+= "Node ID: "+ mv.getNodeIP()+", Membership Count: "+mv.getMembershipCount()+"\n";
-        }
-        return retString;
-    }
+
 
     public int getActiveNodeCount(){
         int counter=0;

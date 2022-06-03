@@ -10,16 +10,16 @@ import org.junit.jupiter.api.Test;
 
 
 public class UnicastServiceTests {
-    UnicastService<String> unicastService;
+    UnicastService unicastService;
 
     @BeforeEach
     void setUp(){
-        unicastService = new UnicastService<String>();
+        unicastService = new UnicastService();
     }
 
     @Test
     void testSendAndReceive() throws InterruptedException{
-        String testMessage="Hello";
+        String testMessage="Hello\nMyfriends";
 
         unicastService.startUnicastReceiver(7001);
 
@@ -45,7 +45,7 @@ public class UnicastServiceTests {
 
         unicastService.stopUnicastReceiver();
 
-        Thread.sleep(10000);
+        Thread.sleep(2000);
         
         unicastService.sendUnicastMessage(7003, "127.0.0.1", testMessage);
 

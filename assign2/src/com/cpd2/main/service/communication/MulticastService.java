@@ -4,12 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
-public class MulticastService<T extends Serializable>{   
+public class MulticastService{   
     private boolean receiverStarted=false;
     private String multicastAddress;
     private int multicastPort;
-    private MulticastServiceReceive<T> receiver;
+    private MulticastServiceReceive receiver;
     private MulticastServiceSend sender;
     private MulticastServiceSend periodicSender;
 
@@ -20,7 +21,7 @@ public class MulticastService<T extends Serializable>{
 
     public void startMulticastReceiver(){
         if(!receiverStarted){
-            receiver= new MulticastServiceReceive<T>(multicastAddress, multicastPort);
+            receiver= new MulticastServiceReceive(multicastAddress, multicastPort);
             this.receiverStarted=true;
             receiver.start();
         }
@@ -36,11 +37,11 @@ public class MulticastService<T extends Serializable>{
         }
     }
 
-    public LinkedList<T> getMulticastReceiverMessages(){
+    public LinkedList<String> getMulticastReceiverMessages(){
         return receiver.getMessages();
     }
 
-    public T getLastMulticastReceiverMessage(){
+    public String getLastMulticastReceiverMessage(){
         return receiver.getMessage();
     }
 
@@ -48,36 +49,15 @@ public class MulticastService<T extends Serializable>{
         return receiver.getMessageListSize();
     }
 
-    public void sendMulticastMessage(T messageToSend){
+    public void sendMulticastMessage(String messageToSend){
         sender = new MulticastServiceSend(multicastAddress, multicastPort);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream o;
-        try {
-            o = new ObjectOutputStream(bos);                
-            o.writeObject(messageToSend);
-            o.flush();
-            sender.setMessageToSend(bos.toByteArray());
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+        sender.setMessageToSend(messageToSend.getBytes(StandardCharsets.UTF_8));     
         sender.start();
     }
 
-    public void sendPeriodicMulticastMessage(T messageToSend,int period){
+    public void sendPeriodicMulticastMessage(String messageToSend,int period){
         periodicSender = new MulticastServiceSend(multicastAddress, multicastPort, period);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream o;
-        try {
-            o = new ObjectOutputStream(bos);                
-            o.writeObject(messageToSend);
-            o.flush();
-            periodicSender.setMessageToSend(bos.toByteArray());
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        periodicSender.setMessageToSend(messageToSend.getBytes(StandardCharsets.UTF_8));  
         periodicSender.start();
     }
 
@@ -97,18 +77,8 @@ public class MulticastService<T extends Serializable>{
         return periodicSender.isPaused();
     }
 
-    public void updatePeriodicMessage(T messageToSend){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream o;
-        try {
-            o = new ObjectOutputStream(bos);                
-            o.writeObject(messageToSend);
-            o.flush();
-            periodicSender.setMessageToSend(bos.toByteArray());
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void updatePeriodicMessage(String messageToSend){
+        periodicSender.setMessageToSend(messageToSend.getBytes(StandardCharsets.UTF_8));  
     }
 
 }

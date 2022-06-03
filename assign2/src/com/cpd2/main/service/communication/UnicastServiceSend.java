@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -29,8 +29,8 @@ public class UnicastServiceSend extends Thread{
         try (Socket socket = new Socket(ipAddress, port)) {
  
             OutputStream output = socket.getOutputStream();
-            ObjectOutputStream sender = new ObjectOutputStream(output);
-            sender.writeObject(msgToSend);
+            PrintWriter sender =  new PrintWriter(output, true);
+            msgToSend.toString().lines().forEach(s-> sender.println(s));
             socket.close();
 
         } catch (UnknownHostException ex) {

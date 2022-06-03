@@ -14,4 +14,19 @@ public class StorageMessage implements Serializable {
         this.contents=contents;
     }
 
+    public StorageMessage(String lastObjectReceived) {
+        String[] components =lastObjectReceived.split("\\n-\\n");
+        this.type=StorageMessageType.valueOf(components[0]);
+        this.contents=components[1];
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(type.name());
+        stringBuilder.append("\n-\n");
+        stringBuilder.append(contents);
+        return stringBuilder.toString();
+    }
+
 }
