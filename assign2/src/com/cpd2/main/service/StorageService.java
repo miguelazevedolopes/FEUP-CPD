@@ -180,7 +180,7 @@ public class StorageService extends Thread{
     }
 
     public synchronized void put(StorageMessage message){
-        
+        System.out.println("Node "+ membershipView.getNodeIP() + ": SIze of node hash list is "+nodeHashes.size());
         MembershipView nodeInfo= getResponsibleNodeInfo(message);
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             saveToFile(message);

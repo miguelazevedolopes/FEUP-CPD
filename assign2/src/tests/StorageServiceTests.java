@@ -91,10 +91,15 @@ public class StorageServiceTests {
         nodeTwo.leave();
     }
 
+    public void testBelongsTo(){
+        
+    }
+
     @Test
     public void testPutWrongNode() throws InterruptedException, RemoteException{
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.2",7009);
         nodeOne.join();
+     
 
         Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.1",7011);
         nodeTwo.join();
@@ -220,7 +225,7 @@ public class StorageServiceTests {
         Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7023);
 
         LocateRegistry.createRegistry(1900);
-        Naming.rebind("rmi://127.0.0.1:1900/"+nodeOne.getMembershipView().getNodeHash(),nodeOne);
+            Naming.rebind("rmi://127.0.0.1:1900/"+nodeOne.getMembershipView().getNodeHash(),nodeOne);
 
         nodeOne.join();
 

@@ -16,7 +16,8 @@ public class MembershipView{
         this.nodeIP=nodeIP;
         this.nodeHash = Utils.generateHash(nodeIP);
         this.storagePort=storagePort;
-        this.membershipPort=storagePort+1;        
+        this.membershipPort=storagePort+1;    
+        updateLastChecked();    
     }
 
     public MembershipView(String str){
