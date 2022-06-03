@@ -247,7 +247,7 @@ public class StorageService extends Thread{
             //Try first replica
             nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
             try {
-                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+"/"+nodeInfo.getNodeHash());
                 file = responsibleNode.get(message.contents);
                 return file;
             } catch (Exception e) {
@@ -258,7 +258,7 @@ public class StorageService extends Thread{
             //Try second replica
             nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
             try {
-                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+"/"+nodeInfo.getNodeHash());
                 file = responsibleNode.get(message.contents);
                 return file;
             } catch (Exception e) {
@@ -271,7 +271,7 @@ public class StorageService extends Thread{
             String file=null;
             // Try responsible
             try {
-                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+"/"+nodeInfo.getNodeHash());
                 file = responsibleNode.get(message.contents);
                 return file;
             } catch (Exception e) {
@@ -282,7 +282,7 @@ public class StorageService extends Thread{
             //Try first replica
             nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
             try {
-                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+"/"+nodeInfo.getNodeHash());
                 file = responsibleNode.get(message.contents);
                 return file;
             } catch (Exception e) {
@@ -293,7 +293,7 @@ public class StorageService extends Thread{
             //Try second replica
             nodeInfo=membershipLog.getNodeInfo(getSuccessor(nodeInfo.getNodeHash()));
             try {
-                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+":1900/"+nodeInfo.getNodeHash());
+                KeyValueStore responsibleNode = (KeyValueStore)Naming.lookup("rmi://"+nodeInfo.getNodeIP()+"/"+nodeInfo.getNodeHash());
                 file = responsibleNode.get(message.contents);
                 return file;
             } catch (Exception e) {

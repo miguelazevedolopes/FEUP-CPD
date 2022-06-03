@@ -41,7 +41,7 @@ public class TestClient {
             if(args[0].equals("join")){
                 KeyValueStore client;
                 try {
-                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
+                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     client.join();
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
                     // TODO Auto-generated catch block
@@ -52,7 +52,7 @@ public class TestClient {
             else if(args[0].equals("leave")){
                 KeyValueStore client;
                 try {
-                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
+                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     client.leave();
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
                     // TODO Auto-generated catch block
@@ -69,7 +69,7 @@ public class TestClient {
             if(args[0].equals("put")){
                 KeyValueStore client;
                 try {
-                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
+                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     client.put(getFileFromPath(args[2]));
                     System.out.println(Utils.generateHash(ipAddress)); 
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
@@ -85,7 +85,7 @@ public class TestClient {
                 }
                 KeyValueStore client;
                 try {
-                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
+                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     String fileContents= client.get(args[2]);
                     reconstructFile(fileContents);
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
@@ -100,7 +100,7 @@ public class TestClient {
                 }
                 KeyValueStore client;
                 try {
-                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
+                    client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     client.delete(args[2]);
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
                     // TODO Auto-generated catch block
