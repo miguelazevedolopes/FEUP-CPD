@@ -1,6 +1,5 @@
 package com.cpd2.main.service.communication;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class UnicastService {

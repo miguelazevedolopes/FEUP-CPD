@@ -106,7 +106,7 @@ public class StorageServiceTests {
 
         File file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.2") + "/" + Utils.generateHash("Teste teste isto é um teste"));
 
-        assertFalse(file.exists());
+        assertTrue(file.exists());
 
         file = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + Utils.generateHash("127.0.0.1") + "/" + Utils.generateHash("Teste teste isto é um teste"));
         

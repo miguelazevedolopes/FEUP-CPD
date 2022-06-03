@@ -1,10 +1,8 @@
 package com.cpd2.main.service.messages;
 
-import java.io.Serializable;
-
 import com.cpd2.main.service.messages.enums.StorageMessageType;
 
-public class StorageMessage implements Serializable {
+public class StorageMessage {
 
     public StorageMessageType type;
     public String contents;

@@ -26,8 +26,6 @@ public class MembershipService extends Thread{
         
         this.membershipView = membershipView;
 
-        membershipView.saveMembershipInfo();
-
         this.membershipLog = membershipLog;
 
         this.membershipStoragePipe = membershipStoragePipe;
@@ -113,9 +111,11 @@ public class MembershipService extends Thread{
                 System.out.println("Node "+ membershipView.getNodeIP() + ": " + "Received multicast msg");
                 MembershipMessage msg = new MembershipMessage(multicastService.getLastMulticastReceiverMessage());
                 handleMembershipMessage(msg);
-                if(!membershipLog.isUpToDate()){
-                    multicastService.pausePeriodicMulticastSender();
+                if(membershipLog.isUpToDate()){
+                    Utils.saveMembershipInfo(new MembershipMessage(membershipView, membershipLog, MembershipMessageType.PERIODIC));
                 }
+                else multicastService.pausePeriodicMulticastSender();
+                
                 if(multicastService.serviceIsPaused()){
                     if(membershipLog.isUpToDate()){
                         multicastService.resumePeriodicMulticastSender();
@@ -138,7 +138,7 @@ public class MembershipService extends Thread{
 
         membershipView.increaseMembershipCount();
 
-        membershipView.saveMembershipInfo();
+        Utils.saveMembershipInfo(new MembershipMessage(membershipView, membershipLog, MembershipMessageType.PERIODIC));
 
         membershipLog.updateNodeView(membershipView,nodeHashes);
 

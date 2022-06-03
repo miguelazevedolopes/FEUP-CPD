@@ -1,6 +1,5 @@
 package com.cpd2.main.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -26,12 +25,37 @@ public class MembershipLog{
     @Override
     public String toString() {
         String retString="";
-        retString+=Boolean.toString(upToDate);
+        retString+=Boolean.toString(upToDate)+"\n";
         for (MembershipView mv : memLog) {
             retString+= mv.toString()+"\n";
         }
         return retString.substring(0, retString.length()-1);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+ 
+        if (!(obj instanceof MembershipLog)) {
+            return false;
+        }
+         
+        MembershipLog c = (MembershipLog) obj;
+        
+        if(memLog.size()!=c.getLogSize()) return false;
+
+        for (int i = 0; i < c.getLogSize(); i++) {
+            if(!memLog.get(i).equals(c.memLog.get(i))){
+                return false;
+            }
+        }
+
+        if(upToDate!=c.upToDate) return false;
+
+        return true;
+    }    
 
     public boolean isUpToDate(){
         return upToDate;
@@ -42,7 +66,7 @@ public class MembershipLog{
      * @param nodeID the node to be updated
      * @param membershipCount the new count to be set
      */
-    void updateNodeView(MembershipView mv, TreeSet<String> nodeHashes){
+    public void updateNodeView(MembershipView mv, TreeSet<String> nodeHashes){
         synchronized(memLog){
             for(int i = 0; i < memLog.size(); i++)
             {
@@ -138,4 +162,6 @@ public class MembershipLog{
         }
         return counter;
     }
+
+
 }

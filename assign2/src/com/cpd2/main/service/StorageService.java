@@ -67,19 +67,16 @@ public class StorageService extends Thread{
     private void saveOwnedKeyList(){
         
         // Creates and saves the membership info to a file
-        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipView.getNodeHash()+"/"+"keys");
+        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+membershipView.getNodeHash()+"/"+"keys.txt");
 
         if(f.exists()) f.delete();
 
         try{
 
             f.createNewFile();
-
-            FileOutputStream fStream = new FileOutputStream(f);
-            ObjectOutputStream o = new ObjectOutputStream(fStream);
-            o.writeObject(ownedKeys);
-            o.close();
-            fStream.close();
+            FileWriter myWriter = new FileWriter(f.getAbsolutePath());
+            myWriter.write(ownedKeys.toString());
+            myWriter.close();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -98,6 +95,8 @@ public class StorageService extends Thread{
     private void saveToFile(StorageMessage message) {
         System.out.println("Node "+ membershipView.getNodeIP() + ": Saved the file to persistent memory");
         String fileHash = Utils.generateHash(message.contents);
+        File dir = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash());
+        if(!dir.exists()) dir.mkdir();
         File f = new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/" + membershipView.getNodeHash() +"/" + fileHash);
         try{
             System.out.println(f.getAbsolutePath());

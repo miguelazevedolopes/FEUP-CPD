@@ -1,9 +1,4 @@
 package com.cpd2.main.service.communication;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 public class MulticastService{   

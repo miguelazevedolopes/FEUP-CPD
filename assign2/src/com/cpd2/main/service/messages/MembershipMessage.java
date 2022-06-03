@@ -1,14 +1,9 @@
 package com.cpd2.main.service.messages;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.cpd2.main.service.MembershipLog;
 import com.cpd2.main.service.MembershipView;
 import com.cpd2.main.service.messages.enums.MembershipMessageType;
 
-public class MembershipMessage implements Serializable {
+public class MembershipMessage {
     public MembershipView mView;
     public MembershipLog mLog;
     public MembershipMessageType type;

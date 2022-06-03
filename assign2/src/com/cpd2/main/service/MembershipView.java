@@ -1,12 +1,7 @@
 package com.cpd2.main.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
+import java.io.FileWriter;
 public class MembershipView{
     private int membershipCount;
     private String nodeIP = new String();
@@ -37,6 +32,8 @@ public class MembershipView{
         return retString;
     }
 
+    
+
     public String getNodeHash() {
         return this.nodeHash;
     }
@@ -57,37 +54,6 @@ public class MembershipView{
         return this.storagePort;
     }
 
-    
-    
-    /**
-     * Saves membership info to persistent storage
-     */
-    public void saveMembershipInfo(){
-
-        // Creates directory in case it doesn't exist 
-        var temp=new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+nodeHash);
-        temp.mkdirs();
-        System.out.println(temp.getAbsolutePath());
-        
-        // Creates and saves the membership info to a file
-        File f= new File("/home/miguel/Documents/Faculdade/g01/assign2/storage/"+nodeHash+"/"+"membership");
-        try{
-
-            f.createNewFile();
-
-            // FileOutputStream fStream = new FileOutputStream(f);
-            // ObjectOutputStream o = new ObjectOutputStream(fStream);
-            // o.writeObject(this);
-            // o.close();
-            // fStream.close();
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            
-            e.printStackTrace();
-        }
-        
-    }
 
     public void increaseMembershipCount(){
         this.membershipCount++;
