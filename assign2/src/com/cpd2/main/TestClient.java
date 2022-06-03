@@ -79,6 +79,10 @@ public class TestClient {
                 
             }
             else if(args[0].equals("get")){
+                if(args[2].length()!=64){
+                    System.out.println("Not a valid hash.");
+                    return;
+                }
                 KeyValueStore client;
                 try {
                     client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));
@@ -90,6 +94,10 @@ public class TestClient {
                 }
             }
             else if(args[0].equals("delete")){
+                if(args[2].length()!=64){
+                    System.out.println("Not a valid hash.");
+                    return;
+                }
                 KeyValueStore client;
                 try {
                     client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+":1900"+"/"+ Utils.generateHash(ipAddress));

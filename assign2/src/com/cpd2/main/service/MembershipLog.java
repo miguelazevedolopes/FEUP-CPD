@@ -108,11 +108,20 @@ public class MembershipLog{
         }
     }
 
-    void checkUpdated(MembershipLog toBeCompared, TreeSet<String> nodeHashes)
+    void checkUpdated(MembershipView sender,MembershipLog toBeCompared, TreeSet<String> nodeHashes)
     {
         for(int i = 0; i < toBeCompared.memLog.size(); i++)
         {
             updateNodeView(toBeCompared.memLog.get(i), nodeHashes);
+        }
+        updateSenderInfo(sender);
+    }
+
+    private void updateSenderInfo(MembershipView sender) {
+        for (MembershipView mv : memLog) {
+            if(mv.getNodeIP().equals(sender.getNodeIP())){
+                mv.updateLastChecked();
+            }
         }
     }
 
@@ -161,6 +170,16 @@ public class MembershipLog{
             }
         }
         return counter;
+    }
+
+    public MembershipView checkForDeadNodes() {
+        for (MembershipView membershipView : memLog) {
+            if(System.currentTimeMillis()-membershipView.getLastUpdated()>20000){
+                membershipView.increaseMembershipCount();
+                return membershipView;
+            }
+        }
+        return null;
     }
 
 

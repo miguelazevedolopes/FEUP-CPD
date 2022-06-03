@@ -76,4 +76,7 @@ public class MulticastService{
         periodicSender.setMessageToSend(messageToSend.getBytes(StandardCharsets.UTF_8));  
     }
 
+    public boolean periodicServiceHasStarted(){
+        return periodicSender!=null;
+    }
 }

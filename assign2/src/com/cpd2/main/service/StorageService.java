@@ -40,7 +40,6 @@ public class StorageService extends Thread{
         // Setting up unicast communication
         this.unicastService = new UnicastService();
 
-        
     }
 
     public synchronized void stopService() {
@@ -333,8 +332,9 @@ public class StorageService extends Thread{
             
             }
             if(!membershipStoragePipe.isEmpty()){
-                System.out.println("Node "+ membershipView.getNodeIP() + ": Recebeu JOIN");
-                handleJoin(membershipStoragePipe.poll());
+                PipeMessage msg=membershipStoragePipe.poll();
+                if(msg.type==PipeMessageType.JOIN)
+                    handleJoin(msg);
             }
 
             try {

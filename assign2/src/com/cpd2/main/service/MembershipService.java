@@ -67,9 +67,17 @@ public class MembershipService extends Thread{
             }
             membershipStoragePipe.add(new PipeMessage(PipeMessageType.JOIN,msg.mView));
         }
-        membershipLog.checkUpdated(msg.mLog,nodeHashes);
+        membershipLog.checkUpdated(msg.mView,msg.mLog,nodeHashes);
         if(membershipLog.isUpToDate()){
             Utils.saveMembershipInfo(new MembershipMessage(membershipView, membershipLog, MembershipMessageType.PERIODIC));
+        }
+        if(multicastService.periodicServiceHasStarted()){
+            multicastService.updatePeriodicMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString());
+        }
+        MembershipView deadNode=membershipLog.checkForDeadNodes();
+        if(deadNode!=null && membershipLog.isUpToDate()){
+            multicastService.sendMulticastMessage(new MembershipMessage(deadNode, membershipLog,MembershipMessageType.LEAVE).toString());
+            nodeHashes.remove(deadNode.getNodeHash());
         }
     }
 
@@ -105,9 +113,9 @@ public class MembershipService extends Thread{
         multicastService.startMulticastReceiver();
 
         System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Receiving on multicast");
-        if(membershipLog.isUpToDate()||membershipLog.getActiveNodeCount()<3){
-            multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString(), 1000);
-        }
+
+        multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString(), 1000);
+        
         
         while(keepRunning()){
             while(multicastService.getReceiverMessageSize()!=0){
@@ -123,8 +131,6 @@ public class MembershipService extends Thread{
                         multicastService.resumePeriodicMulticastSender();
                     }
                 }
-                
-                multicastService.updatePeriodicMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString());
             }
             try {
                 Thread.sleep(100);

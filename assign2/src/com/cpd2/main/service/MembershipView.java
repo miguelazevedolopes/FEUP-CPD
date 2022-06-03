@@ -8,6 +8,8 @@ public class MembershipView{
     private String nodeHash = new String();;
     private int membershipPort;
     private int storagePort;
+    private long lastChecked;
+
 
     public MembershipView(String nodeIP,int membershipCount,int storagePort){
         this.membershipCount=membershipCount;
@@ -24,15 +26,18 @@ public class MembershipView{
         this.membershipCount= Integer.parseInt(components[1]);
         this.storagePort= Integer.parseInt(components[2]);
         this.membershipPort=storagePort+1;     
+        this.lastChecked= Long.parseLong(components[3]);
     }
 
     @Override
     public String toString() {
-        String retString=nodeIP+", "+String.valueOf(membershipCount)+", "+String.valueOf(storagePort);
+        String retString=nodeIP+", "+String.valueOf(membershipCount)+", "+String.valueOf(storagePort)+", "+String.valueOf(lastChecked);
         return retString;
     }
 
-    
+    public void updateLastChecked(){
+        lastChecked=System.currentTimeMillis();
+    }
 
     public String getNodeHash() {
         return this.nodeHash;
@@ -40,6 +45,10 @@ public class MembershipView{
 
     public String getNodeIP(){
         return this.nodeIP;
+    }
+
+    public long getLastUpdated(){
+        return this.lastChecked;
     }
 
     public int getMembershipCount(){
