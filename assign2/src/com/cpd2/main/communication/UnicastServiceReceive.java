@@ -44,6 +44,7 @@ public class UnicastServiceReceive extends Thread {
             Socket socket=null;
             InputStream input=null;
             while (keepRunning()) {
+                serverSocket.setReuseAddress(true);
                 socket = serverSocket.accept();
                 input = socket.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));

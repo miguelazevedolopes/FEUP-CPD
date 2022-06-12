@@ -1,7 +1,5 @@
 package com.cpd2.main.service;
 
-import java.io.File;
-import java.io.FileWriter;
 public class MembershipView{
     private int membershipCount;
     private String nodeIP = new String();

@@ -1,11 +1,7 @@
 package com.cpd2.main.service;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.nio.channels.Pipe;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,9 +51,11 @@ public class StorageService extends Thread{
         synchronized(nodeHashes){
             String nodeHash=nodeHashes.higher(messageHash);
             if(nodeHash!=null){
+                System.out.println("Responsible node is Node "+ membershipLog.getNodeInfo(nodeHash).getNodeIP());
                 return membershipLog.getNodeInfo(nodeHash);
             }
             else{
+                System.out.println("Responsible node is Node "+ membershipLog.getNodeInfo(nodeHashes.first()).getNodeIP());
                 return membershipLog.getNodeInfo(nodeHashes.first());
             }
         }
@@ -78,8 +76,6 @@ public class StorageService extends Thread{
             myWriter.close();
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            
             e.printStackTrace();
         }
     }
@@ -98,7 +94,6 @@ public class StorageService extends Thread{
         if(!dir.exists()) dir.mkdir();
         File f = new File(Utils.getRelativePath() + membershipView.getNodeHash() +"/" + fileHash);
         try{
-            System.out.println(f.getAbsolutePath());
             f.createNewFile();
 
             FileOutputStream fStream = new FileOutputStream(f);
@@ -180,7 +175,6 @@ public class StorageService extends Thread{
     }
 
     public synchronized void put(StorageMessage message){
-        System.out.println("Node "+ membershipView.getNodeIP() + ": SIze of node hash list is "+nodeHashes.size());
         MembershipView nodeInfo= getResponsibleNodeInfo(message);
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             saveToFile(message);
@@ -212,6 +206,7 @@ public class StorageService extends Thread{
         if(nodeInfo.getNodeIP().equals(membershipView.getNodeIP())){
             if(ownedKeys.contains(message.contents)){
                 deleteFile(message.contents);
+                saveOwnedKeyList();
             }
             if(nodeHashes.size()>=3){
                 String successorOneHash = getSuccessor(membershipView.getNodeHash());
@@ -308,23 +303,30 @@ public class StorageService extends Thread{
     @Override
     public void run() {
         unicastService.startUnicastReceiver(membershipView.getStoragePort());
+        System.out.println("Starting unicast receiver on port: "+ membershipView.getStoragePort());
         nodeHashes.add(membershipView.getNodeHash());
         while(keepRunning()){
             if(unicastService.getNumberOfObjectsReceived()>0){
-
+                System.out.println("Recebu msg");
                 StorageMessage message = new StorageMessage(unicastService.getLastObjectReceived());
+                System.out.println("Message type:" + message.type.toString());
                 switch (message.type){
                     case PUT:
+                        System.out.println("Node "+ membershipView.getNodeIP() + ": Received a PUT request");
                         put(message);
                         break;
                     case PUT_REPLICATE:
+                        System.out.println("Node "+ membershipView.getNodeIP() + ": Received a PUT_REPLICATE request");
                         saveToFile(message);
                         break;
                     case DELETE:
+                        System.out.println("Node "+ membershipView.getNodeIP() + ": Received a DELETE request");
                         delete(message);
                         break;
                     case DELETE_REPLICATE:
+                        System.out.println("Node "+ membershipView.getNodeIP() + ": Received a DELETE_REPLICATE request");
                         deleteFile(message.contents);
+                        saveOwnedKeyList();
                         break;
                     default:
                         break;

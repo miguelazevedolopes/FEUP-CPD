@@ -71,7 +71,7 @@ public class TestClient {
                 try {
                     client = (KeyValueStore)Naming.lookup("rmi://"+ipAddress+"/"+ Utils.generateHash(ipAddress));
                     client.put(getFileFromPath(args[2]));
-                    System.out.println(Utils.generateHash(ipAddress)); 
+                    System.out.println(Utils.generateHash(getFileFromPath(args[2]))); 
                 } catch (MalformedURLException | RemoteException | NotBoundException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

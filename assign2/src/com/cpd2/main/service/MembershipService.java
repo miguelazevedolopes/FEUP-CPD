@@ -76,7 +76,6 @@ public class MembershipService extends Thread{
         }
         MembershipView deadNode=membershipLog.checkForDeadNodes();
         if(deadNode!=null && membershipLog.isUpToDate()){
-            System.out.println("morto");
             multicastService.sendMulticastMessage(new MembershipMessage(deadNode, membershipLog,MembershipMessageType.LEAVE).toString());
             nodeHashes.remove(deadNode.getNodeHash());
         }
