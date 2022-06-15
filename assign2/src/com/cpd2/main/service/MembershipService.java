@@ -93,6 +93,8 @@ public class MembershipService extends Thread{
         // Sends join message (includes MembershipView and MembershipLog)
         while(unicastService.getNumberOfObjectsReceived()!=3&&tries!=3){
             try {
+                membershipView.updateLastChecked();
+                membershipLog.updateNodeView(membershipView,nodeHashes);
                 multicastService.sendMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.JOIN).toString());
                 System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Try " + tries);
                 Thread.sleep(2000);
@@ -115,7 +117,6 @@ public class MembershipService extends Thread{
         System.out.println("Node "+ membershipView.getNodeIP() + ": " +"Receiving on multicast");
 
         multicastService.sendPeriodicMulticastMessage(new MembershipMessage(membershipView, membershipLog,MembershipMessageType.PERIODIC).toString(), 1000);
-        
         
         while(keepRunning()){
             while(multicastService.getReceiverMessageSize()!=0){
