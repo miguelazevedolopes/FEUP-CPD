@@ -174,6 +174,7 @@ public class MembershipLog{
 
     public MembershipView checkForDeadNodes() {
         for (MembershipView membershipView : memLog) {
+            if(membershipView.getMembershipCount()%2!=0) continue;
             if((System.currentTimeMillis()-membershipView.getLastUpdated())>20000){
                 System.out.println(System.currentTimeMillis()-membershipView.getLastUpdated());
                 membershipView.increaseMembershipCount();
