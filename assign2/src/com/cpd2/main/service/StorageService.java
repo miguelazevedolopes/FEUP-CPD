@@ -102,9 +102,10 @@ public class StorageService extends Thread{
             o.close();
             fStream.close();
             
-            ownedKeys.add(fileHash);
-            saveOwnedKeyList();
-            
+            if(!ownedKeys.contains(fileHash)){
+                ownedKeys.add(fileHash);
+                saveOwnedKeyList();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

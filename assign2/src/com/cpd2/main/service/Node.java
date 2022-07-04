@@ -16,18 +16,15 @@ public class Node extends UnicastRemoteObject implements KeyValueStore{
 
     MembershipService membershipService;
     StorageService storageService;
+    String multicastAddress,nodeIpAddress;
+    int multicastPort,nodePort;
 
     public Node(String multicastAddressString, int multicastPort, String nodeIpAddress, int nodePort) throws RemoteException{
         super();
-        MembershipView membershipView = new MembershipView(nodeIpAddress, 0, nodePort);
-        MembershipLog membershipLog = new MembershipLog(membershipView);
-        LinkedList<PipeMessage> membershipStoragePipe = new LinkedList<>();
-        TreeSet<String> nodeHashes = new TreeSet<>();
-
-
-        this.membershipService=new MembershipService(multicastAddressString, multicastPort,membershipView,membershipLog,nodeHashes,membershipStoragePipe);
-        this.storageService= new StorageService(membershipLog, membershipView, nodeHashes,membershipStoragePipe);
-
+        this.multicastAddress=multicastAddressString;
+        this.nodeIpAddress=nodeIpAddress;
+        this.multicastPort=multicastPort;
+        this.nodePort=nodePort;        
     }
 
     public MembershipLog getMembershipLog(){
@@ -40,6 +37,13 @@ public class Node extends UnicastRemoteObject implements KeyValueStore{
 
     @Override
     public void join() {
+        MembershipView membershipView = new MembershipView(nodeIpAddress, 0, nodePort);
+        MembershipLog membershipLog = new MembershipLog(membershipView);
+        LinkedList<PipeMessage> membershipStoragePipe = new LinkedList<>();
+        TreeSet<String> nodeHashes = new TreeSet<>();
+        this.membershipService=new MembershipService(multicastAddress, multicastPort,membershipView,membershipLog,nodeHashes,membershipStoragePipe);
+        this.storageService= new StorageService(membershipLog, membershipView, nodeHashes,membershipStoragePipe);
+
         storageService.start();
         membershipService.start();
     }
