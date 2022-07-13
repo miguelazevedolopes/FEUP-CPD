@@ -222,14 +222,14 @@ public class StorageServiceTests {
 
     @Test
     public void testGetWrongNode() throws InterruptedException, RemoteException, MalformedURLException, UnknownHostException{
-        Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7023);
+        Node nodeOne = new Node("225.0.0.1",7373,"127.0.0.1",7037);
 
         LocateRegistry.createRegistry(1900);
             Naming.rebind("rmi://127.0.0.1:1900/"+nodeOne.getMembershipView().getNodeHash(),nodeOne);
 
         nodeOne.join();
 
-        Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.2",7025);
+        Node nodeTwo= new Node("225.0.0.1",7373,"127.0.0.2",7039);
 
         Naming.rebind("rmi://127.0.0.2:1900/"+nodeTwo.getMembershipView().getNodeHash(),nodeTwo);
 

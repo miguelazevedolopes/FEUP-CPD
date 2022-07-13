@@ -21,13 +21,13 @@ public class UnicastServiceTests {
     void testSendAndReceive() throws InterruptedException{
         String testMessage="Hello\nMyfriends";
 
-        unicastService.startUnicastReceiver(7001);
-
-        Thread.sleep(500);
-        
-        unicastService.sendUnicastMessage(7001, "127.0.0.1", testMessage);
+        unicastService.startUnicastReceiver(7043);
 
         Thread.sleep(1000);
+        
+        unicastService.sendUnicastMessage(7043, "127.0.0.1", testMessage);
+
+        Thread.sleep(2000);
 
         assertEquals(testMessage,unicastService.getLastObjectReceived());
 
@@ -39,7 +39,7 @@ public class UnicastServiceTests {
 
         String testMessage="Hello";
 
-        unicastService.startUnicastReceiver(7003);
+        unicastService.startUnicastReceiver(7045);
 
         Thread.sleep(1000);
 
@@ -47,7 +47,7 @@ public class UnicastServiceTests {
 
         Thread.sleep(2000);
         
-        unicastService.sendUnicastMessage(7003, "127.0.0.1", testMessage);
+        unicastService.sendUnicastMessage(7047, "127.0.0.3", testMessage);
 
         Thread.sleep(1000);
 
