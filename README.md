@@ -1,12 +1,4 @@
-# CPD Projects - Group T10G01
-
-## Group Members
-
-| Name                               | Student Number | Email             |
-| ---------------------------------- | -------------- | ----------------- |
-| Afonso Duarte de Carvalho Monteiro | up201907284    | up201907284@up.pt |
-| Miguel Lopes                       | up201704590    | up201704590@up.pt |
-| Vasco Alves                        | up201808031    | up201808031@up.pt |
+# CPD Projects
 
 ## [Assignment 1](./assign1)
 
@@ -25,6 +17,14 @@ To keep track of the cluster membership, the storage system implements a distrib
 The project also involved implementing a test client to verify the functionality of the key-value store and the membership service. Overall, the project was challenging, but it provided an excellent opportunity to learn about distributed systems and the challenges of implementing them in practice.
 
 Our design is loosely based on Amazon's Dynamo, in that it uses consistent-hashing to partition the key-value pairs among the different nodes.
+
+## Group Members
+
+| Name                               | Student Number | Email             |
+| ---------------------------------- | -------------- | ----------------- |
+| Afonso Duarte de Carvalho Monteiro | up201907284    | up201907284@up.pt |
+| Miguel Lopes                       | up201704590    | up201704590@up.pt |
+| Vasco Alves                        | up201808031    | up201808031@up.pt |
 
 ## Disclaimer
 
