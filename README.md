@@ -1,10 +1,10 @@
 # CPD Projects
 
-## [Assignment 1](./assign1)
+## [Assignment 1 - Matrix Multiplication Analysis](./assign1)
 
 Consisted of comparing several matrix multiplication algorithms and analyzing their performance. 
 
-## [Assignment 2](./assign2)
+## [Assignment 2 - Distributed and Partitioned Key-Value Store](./assign2)
 
 This project involved developing a distributed key-value persistent store for a large cluster. The key-value store partitions the data items among different cluster nodes using consistent-hashing. The service was designed to handle concurrent requests and to tolerate node crashes and message loss.
 
